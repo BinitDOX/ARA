@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">ARA</string>
+
+    <!--    Page Titles-->
+    <string name="page_chats">Chats</string>
+    <string name="page_logs">Logs</string>
+    <string name="page_reminders">Reminders</string>
+
+    <!--    Screen Titles-->
+    <string name="screen_add_assistant">Create Assistant</string>
+    <string name="screen_settings">Settings</string>
+
+    <!--    Content Description-->
+    <string name="cd_icon_profile">Profile Icon</string>
+    <string name="cd_fab_add_assistant">Add Assistant FAB</string>
+    <string name="cd_btn_back">Back Button</string>
+    <string name="cd_btn_menu">Menu Button</string>
+    <string name="cd_img_profile">Profile Image</string>
+    <string name="cd_btn_send_message">Send Message Button</string>
+    <string name="cd_btn_camera">Camera Button</string>
+    <string name="cd_btn_attach_file">Attach File Button</string>
+    <string name="cd_btn_emoji_picker">Emoji Picker Button</string>
+    <string name="cd_btn_delete_alarm">Delete Alarm Button</string>
+
+
+    `<!--    Button Titles-->
+    <string name="btn_add_assistant">CREATE</string>
+    <string name="btn_delete_chat">Delete chat</string>
+    <string name="btn_view_assistant">View assistant</string>
+    <string name="btn_show_system_messages">Show system messages</string>
+    <string name="btn_hide_system_messages">Hide system messages</string>
+
+    <string name="btn_delete_message">Delete message</string>
+    <string name="btn_edit_message">Edit message</string>
+    <string name="btn_reply_message">Reply message</string>
+
+    <string name="btn_auto_playback_audio">Auto playback audio</string>
+    <string name="btn_get_assistant_response">Get response</string>
+    <string name="btn_set_assistant_as_default">Set as default</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_ok">OK</string>
+
+    <!--    Placeholder Text-->
+    <string name="placeholder_message">Message</string>
+    <string name="placeholder_deleted">Deleted</string>
+    <string name="placeholder_user">You</string>
+    <string name="placeholder_system">System</string>
+    <string name="placeholder_listening">Listening…</string>
+    <string name="placeholder_assistant_name">Name</string>
+    <string name="placeholder_assistant_about">About</string>
+    <string name="placeholder_assistant_color">Color</string>
+    <string name="placeholder_assistant_edge_voice">Edge Voice (TTS)</string>
+    <string name="placeholder_assistant_rvc_voice">RVC Voice (STS)</string>
+    <string name="placeholder_assistant_prompt">Instruction Prompt</string>
+    <string name="placeholder_assistant_edge_pitch">Edge Voice Pitch</string>
+    <string name="btn_copy_message">Copy message</string>
+    <string name="placeholder_base_url">Base URL</string>
+    <string name="placeholder_payment_code">Payment Code</string>
+    <string name="placeholder_device_unlock_code">Device Unlock Code</string>
+    <string name="placeholder_assistant_open_trigger_sequence">Assistant Open Trigger Sequence</string>
+    <string name="placeholder_assistant_listen_trigger_sequence">Assistant Listen Trigger Sequence</string>
+    <string name="btn_settings">Settings</string>
+    <string name="btn_save_settings">SAVE</string>
+
+
+</resources>
