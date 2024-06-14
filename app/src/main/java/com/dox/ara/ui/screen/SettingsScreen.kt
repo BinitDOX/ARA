@@ -19,7 +19,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -27,10 +30,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -55,10 +63,14 @@ fun SettingsScreen(
     val baseUrl by settingsViewModel.baseUrl.collectAsStateWithLifecycle()
     val paymentCode by settingsViewModel.paymentCode.collectAsStateWithLifecycle()
     val deviceUnlockCode by settingsViewModel.deviceUnlockCode.collectAsStateWithLifecycle()
+    val assistantIdleAutoResponseTime by settingsViewModel.assistantIdleAutoResponseTime.collectAsStateWithLifecycle()
     val assistantOpenTriggerSequence by settingsViewModel.assistantOpenTriggerSequence.collectAsStateWithLifecycle()
     val assistantListenTriggerSequence by settingsViewModel.assistantListenTriggerSequence.collectAsStateWithLifecycle()
 
     val isSaved by settingsViewModel.isSaved.collectAsStateWithLifecycle()
+
+    var paymentCodeVisibility: Boolean by remember { mutableStateOf(false) }
+    var deviceUnlockCodeVisibility: Boolean by remember { mutableStateOf(false) }
 
     val internalFieldSpacing = 8.dp
     val interFieldSpacing = 16.dp
@@ -107,7 +119,19 @@ fun SettingsScreen(
                     onValueChange = { settingsViewModel.setPaymentCode(it) },
                     label = { Text(stringResource(id = R.string.placeholder_payment_code)) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (paymentCodeVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (paymentCodeVisibility)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description = if (paymentCodeVisibility) "Hide code" else "Show code"
+
+                        IconButton(onClick = {paymentCodeVisibility = !paymentCodeVisibility}){
+                            Icon(imageVector  = image, description)
+                        }
+                    }
                 )
 
                 Text(
@@ -125,7 +149,19 @@ fun SettingsScreen(
                     onValueChange = { settingsViewModel.setDeviceUnlockCode(it) },
                     label = { Text(stringResource(id = R.string.placeholder_device_unlock_code)) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (deviceUnlockCodeVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (deviceUnlockCodeVisibility)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description = if (deviceUnlockCodeVisibility) "Hide code" else "Show code"
+
+                        IconButton(onClick = {deviceUnlockCodeVisibility = !deviceUnlockCodeVisibility}){
+                            Icon(imageVector  = image, description)
+                        }
+                    }
                 )
 
                 Text(
@@ -137,13 +173,36 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(interFieldSpacing))
 
-                val isValidInput: (String) -> Boolean = { input ->
+                TextField(
+                    value = assistantIdleAutoResponseTime,
+                    onValueChange = { input ->
+                        val filteredInput = input.filter { it.isDigit() }
+                        val longValue = filteredInput.toLongOrNull()
+                        if (longValue != null) {
+                            settingsViewModel.setAssistantIdleAutoResponseTime(longValue.toString())
+                        }
+                    },
+                    label = { Text(stringResource(id = R.string.placeholder_assistant_idle_auto_response_time)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = "If this is set, then the system will automatically prompt each assistant to " +
+                            "start a conversation after the specified number of hours of inactivity. ",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(interFieldSpacing))
+
+                val isValidTriggerInput: (String) -> Boolean = { input ->
                     input.all { it == 'U' || it == 'D' }
                 }
 
                 TextField(
                     value = assistantOpenTriggerSequence,
-                    onValueChange = { if(isValidInput(it)) {settingsViewModel.setAssistantOpenTriggerSequence(it)} },
+                    onValueChange = { if(isValidTriggerInput(it)) {settingsViewModel.setAssistantOpenTriggerSequence(it)} },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_open_trigger_sequence)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -161,7 +220,7 @@ fun SettingsScreen(
 
                 TextField(
                     value = assistantListenTriggerSequence,
-                    onValueChange = { if(isValidInput(it)) {settingsViewModel.setAssistantListenTriggerSequence(it)} },
+                    onValueChange = { if(isValidTriggerInput(it)) {settingsViewModel.setAssistantListenTriggerSequence(it)} },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_listen_trigger_sequence)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()

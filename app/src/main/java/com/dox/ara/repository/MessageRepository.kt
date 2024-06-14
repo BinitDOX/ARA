@@ -36,8 +36,7 @@ class MessageRepository @Inject constructor(
         return messageDao.insert(message)
     }
 
-    suspend fun updateMessageStatus(message: Message, status: MessageStatus){
-        message.status = status
+    suspend fun updateMessage(message: Message){
         messageDao.update(message)
     }
 
@@ -46,6 +45,8 @@ class MessageRepository @Inject constructor(
     }
 
     suspend fun getMessageById(id: Long): Message? = messageDao.getById(id)
+
+    suspend fun getAssistantLastMessageFromEveryChat(): List<Message> = messageDao.getAssistantLastMessageFromEveryChat()
 
     fun getMessages(chatId: Long): Flow<PagingData<Message>> {
         val pagingConfig = PagingConfig(
@@ -97,7 +98,9 @@ class MessageRepository @Inject constructor(
         }
 
         val updatedMessage = message.copy(content = content)
-        if(message.status == MessageStatus.PENDING || message.status == MessageStatus.FAILED){
+        if(message.status == MessageStatus.PENDING ||
+            message.status == MessageStatus.FAILED ||
+            message.status == MessageStatus.BLOCKED){
             messageDao.update(updatedMessage)
             return
         }
@@ -128,7 +131,9 @@ class MessageRepository @Inject constructor(
 
     suspend fun deleteMessage(assistantId: Long, messageId: Long){
         val message = getMessageById(messageId)
-        if(message?.status == MessageStatus.PENDING || message?.status == MessageStatus.FAILED){
+        if(message?.status == MessageStatus.PENDING ||
+            message?.status == MessageStatus.FAILED ||
+            message?.status == MessageStatus.BLOCKED){
             messageDao.deleteById(messageId)
             return
         }

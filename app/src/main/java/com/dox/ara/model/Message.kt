@@ -19,12 +19,12 @@ import com.dox.ara.ui.data.Role
 )
 data class Message(
     @PrimaryKey(autoGenerate = true)
-    var id: Long,
-    var quotedId: Long?,
+    val id: Long,
+    val quotedId: Long?,
     var content: String,
     val timestamp: Long,
     val from: Role,
-    var status: MessageStatus,
+    val status: MessageStatus,
 
     @ColumnInfo(name = "chat_id")
     val chatId: Long

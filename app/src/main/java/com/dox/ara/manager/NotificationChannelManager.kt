@@ -22,8 +22,12 @@ import com.dox.ara.utility.Constants.ALERT_NOTIFICATION_CHANNEL_ID
 import com.dox.ara.utility.Constants.ALERT_NOTIFICATION_CHANNEL_NAME
 import com.dox.ara.utility.Constants.MAIN_NOTIFICATION_CHANNEL_ID
 import com.dox.ara.utility.Constants.MAIN_NOTIFICATION_CHANNEL_NAME
+import com.dox.ara.utility.Constants.MUSIC_NOTIFICATION_CHANNEL_ID
+import com.dox.ara.utility.Constants.MUSIC_NOTIFICATION_CHANNEL_NAME
 import com.dox.ara.utility.Constants.SILENT_NOTIFICATION_CHANNEL_ID
 import com.dox.ara.utility.Constants.SILENT_NOTIFICATION_CHANNEL_NAME
+import com.dox.ara.utility.Constants.SPEECH_NOTIFICATION_CHANNEL_ID
+import com.dox.ara.utility.Constants.SPEECH_NOTIFICATION_CHANNEL_NAME
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -55,14 +59,30 @@ class NotificationChannelManager @Inject constructor(
             NotificationManager.IMPORTANCE_HIGH
         )
 
+        val musicChannel = NotificationChannel(
+            MUSIC_NOTIFICATION_CHANNEL_ID,
+            MUSIC_NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_MIN
+        )
+
+        val speechChannel = NotificationChannel(
+            SPEECH_NOTIFICATION_CHANNEL_ID,
+            SPEECH_NOTIFICATION_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_MIN
+        )
+
         silentChannel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         alertChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         mainChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        musicChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        speechChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
 
         val manager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(silentChannel)
         manager.createNotificationChannel(mainChannel)
         manager.createNotificationChannel(alertChannel)
+        manager.createNotificationChannel(musicChannel)
+        manager.createNotificationChannel(speechChannel)
     }
 
 

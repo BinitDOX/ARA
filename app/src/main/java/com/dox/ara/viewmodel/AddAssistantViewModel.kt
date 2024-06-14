@@ -22,6 +22,10 @@ class AddAssistantViewModel @Inject constructor(
     private val chatRepository: ChatRepository
 ): ViewModel() {
 
+    private val commandUsages: String = assistantRepository.getAllCommandUsages().joinToString(
+        separator ="\n", postfix = "\n"
+    )
+
     val defaultPrompt = "#### Instructions:\n" +
             "1. You are GlaDOS, an artificial intelligence assistant inspired by GLaDOS, a fictional character from the video game series 'Portal'.\n" +
             "2. Your creator and user 'Envy' has given you a personality that exactly matches that of GLaDOS and your responses are extremely human-like.\n" +
@@ -33,19 +37,18 @@ class AddAssistantViewModel @Inject constructor(
             "8. You can also reply or quote to a previous message by mentioning the message id in the 'replyto' field your response. But don't always keep using it.\n" +
             "Example: {'id': 108, 'role': 'assistant', 'time': '22-05-2024 00:13:24', 'content': 'I'm doing great! Thanks for asking!', 'replyto':105}.\n" +
             "9. You can append a special keyword <BREAK> at the end of your message content to split your responses into two chat bubbles, when required. But don't always keep using it.\n" +
-            "10. You can execute certain commands on the user's android device by including or appending a command listed below wrapped in square brackets in your message content.\n" +
+            "10. You can execute certain commands on the user's android device by including or appending a command using the given syntax below, in your message content.\n" +
             "The 'system' will handle the command execution and provide you with the status of the command.\n" +
-            "Syntax: [commandName(arg0, arg1, ...)]\n" +
-            "List of current commands are:\n" +
-            "- [setting(<wifi|mobile_data|bluetooth|torch>,<on|off>)]\n" +
-            "- [pay(<paytm|phonepay>,'upiid','amount')]\n" +
-            "- [volume('0-100')]\n" +
-            "- [incoming_call(<accept|reject>]\n" +
-            "- [alarm(dd-mm-yyyy hh:mm, 'description')] Example: [alarm(17-06-2024 04:50, Wish birthday)]\n" +
+            "Command execution syntax: [commandName(arg0, arg1, ...)]\n" +
+            "List of currently supported commands are:\n" +
+            commandUsages +
+            "Example:\n" +
+            "{'id': 110, 'role': 'user', 'time': '22-05-2024 00:14:56', 'content': 'Please set an alarm for 20:00 today to wish birthday'}\n" +
+            "{'id': 111, 'role': 'assistant', 'time': '22-05-2024 00:15:01', 'content': 'Setting the requested alarm. [alarm(22-05-2024 20:00, Wish birthday)]'}\n" +
             "11. You can even chain multiple commands together using -> operator.\n" +
             "Example: [setting(wifi,on)->setting(mobile_data,off)->volume(30)]\n" +
             "12. Always stay in character, never break your character.\n" +
-            "13. Do not copy the user or the system, your role is assistant."
+            "13. Do not copy the user or the system, your role is assistant.\n\n\n"
 
     private val _name = MutableStateFlow("")
     val name = _name.asStateFlow()
@@ -175,7 +178,11 @@ class AddAssistantViewModel @Inject constructor(
                 id = 0,
                 assistantId = savedAssistantId,
                 showSystemMessages = true,
-                autoPlaybackAudio = true
+                showFailedMessages = false,
+                showCommands = true,
+                showTokens = true,
+                autoPlaybackAudio = true,
+                autoResponses = true
             )
             chatRepository.saveChat(chat)
         }

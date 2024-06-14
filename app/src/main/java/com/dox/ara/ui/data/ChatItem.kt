@@ -22,7 +22,8 @@ enum class MessageStatus {
     SENT,
     DELIVERED,
     READ,
-    FAILED
+    FAILED,
+    BLOCKED
 }
 
 val dummyChatItems = listOf(

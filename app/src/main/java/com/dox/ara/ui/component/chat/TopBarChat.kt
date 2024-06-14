@@ -69,6 +69,24 @@ fun TopBarChat(
             OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.toggleShowSystemMessages()
         },
+        ActionItem(R.string.btn_show_failed_messages,
+            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            else Icons.Outlined.Circle,
+            OverflowMode.ALWAYS_OVERFLOW) {
+            chatViewModel.toggleShowFailedMessages()
+        },
+        ActionItem(R.string.btn_show_commands,
+            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            else Icons.Outlined.Circle,
+            OverflowMode.ALWAYS_OVERFLOW) {
+            chatViewModel.toggleShowCommands()
+        },
+        ActionItem(R.string.btn_show_tokens,
+            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            else Icons.Outlined.Circle,
+            OverflowMode.ALWAYS_OVERFLOW) {
+            chatViewModel.toggleShowTokens()
+        },
         ActionItem(R.string.btn_auto_playback_audio,
             if(chat?.autoPlaybackAudio == true) Icons.Outlined.CheckCircle
             else Icons.Outlined.Circle,
@@ -80,6 +98,12 @@ fun TopBarChat(
             else Icons.Outlined.Circle,
             OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.toggleDefaultChat()
+        },
+        ActionItem(R.string.btn_auto_responses,
+            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            else Icons.Outlined.Circle,
+            OverflowMode.ALWAYS_OVERFLOW) {
+            chatViewModel.toggleAutoResponses()
         },
         ActionItem(R.string.btn_get_assistant_response,
             Icons.Outlined.ArrowDownward,

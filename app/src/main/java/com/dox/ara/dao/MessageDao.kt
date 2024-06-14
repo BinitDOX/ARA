@@ -39,4 +39,14 @@ interface MessageDao {
     @Query("DELETE FROM Message WHERE id = :id")
     suspend fun deleteById(id: Long)
 
+    @Query(
+        "SELECT * FROM Message " +
+                "WHERE id IN (" +
+                "    SELECT MAX(id) " +
+                "    FROM Message " +
+                "    WHERE `from` = 'ASSISTANT'" +
+                "    GROUP BY chat_id" +
+                ")"
+    )
+    suspend fun getAssistantLastMessageFromEveryChat(): List<Message>
 }

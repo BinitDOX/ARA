@@ -11,6 +11,7 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.provider.Settings
 import com.dox.ara.command.CommandHandler
+import com.dox.ara.command.CommandHandlerFactory.CommandType.SETTING
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.PermissionManager
 import com.dox.ara.service.EventListenerService.Companion.startRoutine
@@ -48,9 +49,9 @@ class SettingCommandHandler @AssistedInject constructor(
     }
 
     override fun help(): String {
-        val settingTypes = SettingType.entries.joinToString("|") { it.name }
-        val settingValues = SettingValue.entries.joinToString("|") { it.name }
-        return "Usage: setting(<$settingTypes>,<$settingValues>)"
+        val settingTypes = SettingType.entries.joinToString("|") { it.name.lowercase() }
+        val settingValues = SettingValue.entries.joinToString("|") { it.name.lowercase() }
+        return "[${SETTING.name.lowercase()}(<$settingTypes>,<$settingValues>)]"
     }
 
     override fun parseArguments() {

@@ -33,7 +33,6 @@ fun LogsPage(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(top = 0.dp, bottom = 8.dp, start = 8.dp, end = 8.dp),
-        reverseLayout = true
     ) {
         item {
             Row(
@@ -54,7 +53,7 @@ fun LogsPage(
             }
         }
 
-        items(logs) { log ->
+        items(logs.reversed()) { log ->
             Text(
                 text = log,
                 style = MaterialTheme.typography.bodySmall,

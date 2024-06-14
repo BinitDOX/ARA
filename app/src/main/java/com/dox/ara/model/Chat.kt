@@ -14,7 +14,11 @@ data class Chat (
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val showSystemMessages: Boolean,
+    val showFailedMessages: Boolean,
+    val showCommands: Boolean, // []
+    val showTokens: Boolean,  // <>
     val autoPlaybackAudio: Boolean,
+    val autoResponses: Boolean,
 
     @ColumnInfo(name = "assistant_id")
     val assistantId: Long

@@ -3,6 +3,7 @@ package com.dox.ara.command.types
 import android.content.Context
 import android.media.AudioManager
 import com.dox.ara.command.CommandHandler
+import com.dox.ara.command.CommandHandlerFactory.CommandType.VOLUME
 import com.dox.ara.command.CommandResponse
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -19,7 +20,7 @@ class VolumeCommandHandler @AssistedInject constructor(
 
 
     override fun help(): String {
-        return "Usage: volume(<0-100>)"
+        return "[${VOLUME.name.lowercase()}(<0-100>)]"
     }
 
     override fun parseArguments() {

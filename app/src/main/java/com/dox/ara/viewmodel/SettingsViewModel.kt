@@ -3,6 +3,7 @@ package com.dox.ara.viewmodel
 import androidx.lifecycle.ViewModel
 import com.dox.ara.manager.SharedPreferencesManager
 import com.dox.ara.service.event.AssistantTriggerEvent
+import com.dox.ara.utility.Constants.ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY
 import com.dox.ara.utility.Constants.ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY
 import com.dox.ara.utility.Constants.ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY
 import com.dox.ara.utility.Constants.DEVICE_UNLOCK_CODE_KEY
@@ -26,6 +27,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _deviceUnlockCode = MutableStateFlow("")
     val deviceUnlockCode = _deviceUnlockCode.asStateFlow()
+
+    private val _assistantIdleAutoResponseTime = MutableStateFlow("")
+    val assistantIdleAutoResponseTime = _assistantIdleAutoResponseTime.asStateFlow()
 
     private val _assistantOpenTriggerSequence = MutableStateFlow("")
     val assistantOpenTriggerSequence = _assistantOpenTriggerSequence.asStateFlow()
@@ -53,6 +57,10 @@ class SettingsViewModel @Inject constructor(
         _deviceUnlockCode.value = value
     }
 
+    fun setAssistantIdleAutoResponseTime(value: String) {
+        _assistantIdleAutoResponseTime.value = value
+    }
+
     fun setAssistantOpenTriggerSequence(value: String) {
         _assistantOpenTriggerSequence.value = value
     }
@@ -73,6 +81,7 @@ class SettingsViewModel @Inject constructor(
         _baseUrl.value = sharedPreferencesManager.get(DYNAMIC_URL_KEY) ?: ""
         _paymentCode.value = sharedPreferencesManager.get(PAYMENT_CODE_KEY) ?: ""
         _deviceUnlockCode.value = sharedPreferencesManager.get(DEVICE_UNLOCK_CODE_KEY) ?: ""
+        _assistantIdleAutoResponseTime.value = sharedPreferencesManager.get(ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY) ?: ""
         _assistantOpenTriggerSequence.value = sharedPreferencesManager.get(ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY) ?: ""
         _assistantListenTriggerSequence.value = sharedPreferencesManager.get(ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY) ?: ""
     }
@@ -85,6 +94,7 @@ class SettingsViewModel @Inject constructor(
         sharedPreferencesManager.save(DYNAMIC_URL_KEY, _baseUrl.value)
         sharedPreferencesManager.save(PAYMENT_CODE_KEY, _paymentCode.value)
         sharedPreferencesManager.save(DEVICE_UNLOCK_CODE_KEY, _deviceUnlockCode.value)
+        sharedPreferencesManager.save(ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY, _assistantIdleAutoResponseTime.value)
         sharedPreferencesManager.save(ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY, _assistantOpenTriggerSequence.value)
         sharedPreferencesManager.save(ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY, _assistantListenTriggerSequence.value)
 

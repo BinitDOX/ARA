@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.ErrorOutline
@@ -62,9 +63,12 @@ fun MessageTimeText(
                 MessageStatus.FAILED -> {
                     Icons.Default.ErrorOutline
                 }
+                MessageStatus.BLOCKED -> {
+                    Icons.Default.Block
+                }
             },
             tint = if (messageStatus == MessageStatus.READ) MaterialTheme.colorScheme.primary
-            else if(messageStatus == MessageStatus.FAILED) Color.Red.copy(alpha = 0.5f)
+            else if(messageStatus == MessageStatus.FAILED) Color.Red.copy(alpha = 0.4f)
             else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
             contentDescription = null
         )

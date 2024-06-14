@@ -66,6 +66,7 @@ import com.dox.ara.ui.component.chat.TopBarChat
 import com.dox.ara.ui.component.chat.chatbubble.QuotedMessage
 import com.dox.ara.ui.component.chat.chatbubble.ReceivedMessageRow
 import com.dox.ara.ui.component.chat.chatbubble.SentMessageRow
+import com.dox.ara.ui.data.MessageStatus
 import com.dox.ara.ui.data.Role
 import com.dox.ara.ui.theme.ARATheme
 import com.dox.ara.utility.Constants.TEST
@@ -85,6 +86,7 @@ fun ChatScreen(
 
     var quotingMessage by remember { mutableStateOf<Message?>(null) }
     val chatInput = remember { mutableStateOf(TextFieldValue("")) }
+    val testCommands = remember { chatViewModel.getAllTestCommandUsages() }
 
     val scrollState = rememberLazyListState()
 
@@ -145,8 +147,17 @@ fun ChatScreen(
                         var selectedMessage by remember { mutableStateOf<Message?>(null) }
                         var showEditDialog by remember { mutableStateOf(false) }
 
-                        if (message != null) {
+                        if (message != null && !(chat?.showFailedMessages == true && message.status == MessageStatus.FAILED)) {
                             // TODO: Add scroll to on quoted message (findIndexById or map)
+
+                            if(chat?.showTokens == false){
+                                message.content = removeAngularBrackets(message.content)
+                            }
+
+                            if(chat?.showCommands == false){
+                                message.content = removeSquareBrackets(message.content)
+                            }
+
                             val quotedMessage =
                                 message.quotedId?.let { findMessageById(messages, it) }
                             val quotedColor = when (quotedMessage?.from) {
@@ -381,6 +392,7 @@ fun ChatScreen(
                     ChatInput(
                         isListening = speechToTextState.isListening,
                         chatInput = chatInput,
+                        testCommands = testCommands,
                         onMessageSent = { messageContent ->
                             chatViewModel.viewModelScope.launch {
                                 if(messageContent.startsWith(TEST)){
@@ -414,6 +426,17 @@ private fun findMessageById(messages: LazyPagingItems<Message>, id: Long): Messa
         }
     }
     return null
+}
+
+
+fun removeSquareBrackets(text: String): String {
+    val squareBracketsPattern = "\\[.*?\\]"
+    return text.replace(Regex(squareBracketsPattern), "")
+}
+
+fun removeAngularBrackets(text: String): String {
+    val angularBracketsPattern = "<.*?>"
+    return text.replace(Regex(angularBracketsPattern), "")
 }
 
 @Composable

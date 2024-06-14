@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.telecom.TelecomManager
 import com.dox.ara.command.CommandHandler
+import com.dox.ara.command.CommandHandlerFactory.CommandType.INCOMING_CALL
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.PermissionManager
 import dagger.assisted.Assisted
@@ -25,7 +26,7 @@ class IncomingCallCommandHandler @AssistedInject constructor(
     }
 
     override fun help(): String {
-        return "Usage: incoming_call(<accept|reject>)"
+        return "[${INCOMING_CALL.name.lowercase()}(<accept|reject>)]"
     }
 
     override fun parseArguments() {

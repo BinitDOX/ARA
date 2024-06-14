@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.ErrorOutline
@@ -80,6 +81,7 @@ fun MessageBody(chatItem: ChatItem) {
                     MessageStatus.DELIVERED -> Icons.Filled.DoneAll
                     MessageStatus.READ -> Icons.Filled.DoneAll
                     MessageStatus.FAILED -> Icons.Filled.ErrorOutline
+                    MessageStatus.BLOCKED -> Icons.Filled.Block
                 }
                 Icon(
                     modifier = Modifier.size(18.dp),

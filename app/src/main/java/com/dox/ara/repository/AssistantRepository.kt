@@ -117,48 +117,55 @@ class AssistantRepository @Inject constructor(
         }
 
         for (command in commands) {
-            commandResponses.add(command.validateAndExecute())
-            Timber.d("[${::parseAndExecuteCommands.name}] Command response: ${commandResponses.last()}")
+            val commandResponse = command.validateAndExecute()
+            if(!commandResponse.isSuccess && commandResponse.getResponse) {
+                commandResponses.add(commandResponse.copy(
+                    message = commandResponse.message + "\nInform and ask the user before trying to execute the command again"
+                ))
+            } else {
+                commandResponses.add(commandResponse)
+            }
+
+            Timber.d("[${::parseAndExecuteCommands.name}] Command response: $commandResponse")
 
         }
         return commandResponses
+    }
+
+    fun getAllCommandUsages() : List<String> {
+        return commandHandlerFactory.getAllCommandUsages()
     }
 
     private suspend fun saveAndUploadSystemMessages(commandResponses: List<CommandResponse>,
                                                    chatId: Long, quotedMessageId: Long?) {
         for ((index, commandResponse) in commandResponses.withIndex()) {
             val messageId = buildAndSaveSystemMessage(
-                commandResponse = commandResponse,
-                addBreak = true, // index != commandResponses.lastIndex || !commandResponse.getResponse,
+                content = commandResponse.message,
+                getResponse = index != commandResponses.lastIndex || !commandResponse.getResponse,
                 chatId = chatId,
                 quotedMessageId = quotedMessageId
             )
 
-            if(messageId != null) {
+            if(commandResponse.sendResponse) {
                 eventRepository.uploadSystemMessage(messageId, chatId)
             }
         }
     }
 
 
-    suspend fun buildAndSaveSystemMessage(commandResponse: CommandResponse, addBreak: Boolean,
-                                                  chatId: Long, quotedMessageId: Long?): Long? {
+    suspend fun buildAndSaveSystemMessage(content: String, chatId: Long, getResponse: Boolean,
+                                          quotedMessageId: Long?, isTest: Boolean = false): Long {
         val message = Message(
             id = 0,
             chatId = chatId,
-            content = commandResponse.message + if (addBreak) BREAK else "",
+            content = content + if (getResponse) BREAK else "",
             timestamp = Instant.now().toEpochMilli(),
             quotedId = quotedMessageId,
             from = Role.SYSTEM,
-            status = MessageStatus.PENDING
+            status = if(isTest) MessageStatus.BLOCKED else MessageStatus.PENDING
         )
 
-
-        return if(commandResponse.sendResponse){
-            messageDao.insert(message)
-        } else {
-            null
-        }
+        return messageDao.insert(message)
     }
 
     suspend fun getAssistantResponse(assistantId: Long, chatId: Long, autoPromptUser: Boolean = false) {
@@ -190,11 +197,13 @@ class AssistantRepository @Inject constructor(
                 Timber.d("[${::getAssistantResponse.name}] Response: " + response.body()?.payload)
                 val content = response.body()?.payload?.content ?: ""
                 val quotedId = response.body()?.payload?.quotedId
-                message.id = messageId
-                message.content = content
-                message.quotedId = quotedId
-                message.status = MessageStatus.DELIVERED
-                messageDao.update(message)
+                val updatedMessage = message.copy(
+                    id = messageId,
+                    content = content,
+                    quotedId = quotedId,
+                    status = MessageStatus.DELIVERED
+                )
+                messageDao.update(updatedMessage)
 
                 if(!AppLifecycleListener.isAppInForeground()){
                     val assistant = assistantDao.getById(assistantId)
@@ -204,7 +213,7 @@ class AssistantRepository @Inject constructor(
                 messageDao.markAllDeliveredAndFromUserOrSystemAsRead(chatId)
 
                 val currentAudioMode = getAudioMode(context)
-                getAssistantResponseAudio(assistantId, message, currentAudioMode)
+                getAssistantResponseAudio(assistantId, updatedMessage, currentAudioMode)
 
                 if(autoPromptUser && currentAudioMode!= AudioManager.MODE_IN_CALL
                     && currentAudioMode!= AudioManager.MODE_IN_COMMUNICATION) {
@@ -213,7 +222,7 @@ class AssistantRepository @Inject constructor(
 
                         withContext(Dispatchers.Main) {
                             waitForCondition {
-                                mediaControllerManager.isPlaying()
+                                mediaControllerManager.isSpeechPlaying()
                             }
                         }
 
@@ -221,7 +230,7 @@ class AssistantRepository @Inject constructor(
                     }
                 }
 
-                if(message.content.contains(BREAK)){
+                if(updatedMessage.content.contains(BREAK)){
                     breakCount++
                     if(breakCount < MAX_BREAKS) {
                         getAssistantResponse(assistantId, chatId)
@@ -296,7 +305,7 @@ class AssistantRepository @Inject constructor(
 
                         val assistant = assistantDao.getById(assistantId)
                         val mediaItem = MediaItem.Builder()
-                            .setMediaId("Media-${message.chatId}")
+                            .setMediaId("Speech-${message.chatId}")
                             .setUri(source)
                             .setMediaMetadata(
                                 MediaMetadata.Builder()
@@ -318,7 +327,7 @@ class AssistantRepository @Inject constructor(
 
                         // This should run on application thread
                         CoroutineScope(Dispatchers.Main).launch {
-                            mediaControllerManager.play(mediaItem)
+                            mediaControllerManager.playSpeech(mediaItem)
                         }
                     } else {
                         Timber.e("[${::getAssistantResponseAudio.name}] Audio file not found: $source")

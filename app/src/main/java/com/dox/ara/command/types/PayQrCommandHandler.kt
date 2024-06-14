@@ -2,28 +2,30 @@ package com.dox.ara.command.types
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import com.dox.ara.command.CommandHandler
+import com.dox.ara.command.CommandHandlerFactory.CommandType.PAY_QR
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.PermissionManager
 import com.dox.ara.service.EventListenerService
+import com.dox.ara.service.EventListenerService.Companion.ROUTINE_INPUT_EXTRA
 import com.dox.ara.service.event.PaymentCommandEvent
-import com.dox.ara.utility.AppTools.Companion.isAppUpiReady
-import com.dox.ara.utility.Constants.PAYTM_PACKAGE_NAME
+import com.dox.ara.utility.Constants
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
-class PayCommandHandler @AssistedInject constructor(
+class PayQrCommandHandler @AssistedInject constructor(
     @Assisted private val args : List<String>,
     @ApplicationContext private val context: Context,
     private val permissionManager: PermissionManager
 ) : CommandHandler(args) {
-    override val numArgs = 3
+    override val numArgs = 2
     private lateinit var applicationName: PaymentApplication
-    private lateinit var upiId: String
     private var amount: Float = 0.0F
 
     enum class PaymentApplication {
@@ -32,18 +34,14 @@ class PayCommandHandler @AssistedInject constructor(
     }
 
     override fun help(): String {
-        val appNames = PaymentApplication.entries.joinToString("|") { it.name }
+        val appNames = PaymentApplication.entries.joinToString("|") { it.name.lowercase() }
 
-        return "Usage: pay(<${appNames}>,'upi id','amount')"
+        return "[${PAY_QR.name.lowercase()}(<${appNames}>,'amount')]"
     }
 
     override fun parseArguments() {
         val applicationName = args[0].replace(" ", "_").uppercase().replace("'", "")
-        val upiId = args[1].replace("'", "")
-        val amount = args[2].replace("'", "")
-
-        // TODO: Make UPI validator
-        this.upiId = upiId
+        val amount = args[1].replace("'", "")
 
         try {
             this.applicationName = PaymentApplication.valueOf(applicationName)
@@ -62,42 +60,44 @@ class PayCommandHandler @AssistedInject constructor(
     }
 
     private suspend fun handlePaytm(): CommandResponse {
-        return try {
-            val uri = Uri.parse("upi://pay").buildUpon()
-                .appendQueryParameter("pa", upiId)  // Payee address
-                .appendQueryParameter("pn", "Payee Name")  // Payee name
-                //.appendQueryParameter("mc", "")  // Merchant code (optional)
-                //.appendQueryParameter("tid", "UNIQUE_TRANSACTION_ID")  // Transaction ID (optional)
-                //.appendQueryParameter("tr", "UNIQUE_REF_ID")  // Transaction reference ID (optional)
-                .appendQueryParameter("tn", "Automated payment through ARA")  // Transaction note
-                .appendQueryParameter("am", amount.toString())  // Amount
-                .appendQueryParameter("cu", "INR")  // Currency
-                .build()
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = uri
-                setPackage(PAYTM_PACKAGE_NAME)
+        try {
+            if(!permissionManager.isAccessibilityPermissionGranted(context)){
+                return CommandResponse(
+                    isSuccess = false,
+                    message = "Accessibility permission is not granted",
+                    getResponse = true
+                )
             }
 
-            return if (intent.resolveActivity(context.packageManager) != null) {
-                if(!isAppUpiReady(context, PAYTM_PACKAGE_NAME)){
-                    return CommandResponse(false, "Paytm app is not UPI ready yet", true)
-                }
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            val intent = Intent(context.packageManager.getLaunchIntentForPackage(Constants.PAYTM_PACKAGE_NAME))
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.putExtra(ROUTINE_INPUT_EXTRA, amount.toString())
 
-                val response = EventListenerService.startRoutine(
+
+            var responseQr: CommandResponse? = null
+            CoroutineScope(Dispatchers.IO).launch {
+                responseQr = EventListenerService.startRoutine(
                     context,
-                    PaymentCommandEvent.PAYMENT_ROUTINE,
-                    intent
+                    PaymentCommandEvent.PAYMENT_QR_ROUTINE,
+                    intent,
+                    10000L
                 )
+            }
 
-                response
+            val responseUpi = EventListenerService.startRoutine(
+                context,
+                PaymentCommandEvent.PAYMENT_UPI_ROUTINE,
+                null,
+                15000L
+            )
+            return if(responseUpi.isSuccess && responseQr != null){
+                responseQr!!
             } else {
-                CommandResponse(false, "Paytm app is not installed", true)
+                responseUpi
             }
         } catch (e: Exception) {
             Timber.e("[${::handlePaytm.name}] Error: $e")
-            CommandResponse(false, "Error launching Paytm: ${e.message}", true)
+            return CommandResponse(false, "Error launching Paytm: ${e.message}", true)
         }
     }
 

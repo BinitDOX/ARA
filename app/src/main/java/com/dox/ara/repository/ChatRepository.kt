@@ -25,7 +25,11 @@ class ChatRepository @Inject constructor(
         return chatDao.update(chat)
     }
 
-    fun getChat(chatId: Long): Flow<Chat> {
+    suspend fun getChat(chatId: Long): Chat {
+        return chatDao.getChat(chatId)
+    }
+
+    fun getChatFlow(chatId: Long): Flow<Chat> {
         return chatDao.getChatFlow(chatId)
     }
 }

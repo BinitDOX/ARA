@@ -2,11 +2,14 @@ package com.dox.ara.ui.component.chat
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,12 +18,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Api
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,9 +37,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -53,6 +58,7 @@ import com.dox.ara.ui.theme.ARATheme
 @Composable
 fun ChatInput(
     isListening: Boolean,
+    testCommands: List<String>,
     chatInput: MutableState<TextFieldValue>,
     onMicToggle: () -> Unit,
     onMessageSent: (String) -> Unit,
@@ -69,6 +75,7 @@ fun ChatInput(
         ChatTextField(
             modifier = Modifier.weight(1f),
             input = chatInput.value,
+            testCommands = testCommands,
             empty = textEmpty,
             onValueChange = {
                 chatInput.value = it
@@ -107,6 +114,7 @@ private val circleButtonSize = 44.dp
 @Composable
 private fun ChatTextField(
     modifier: Modifier = Modifier,
+    testCommands: List<String>,
     input: TextFieldValue,
     empty: Boolean,
     onValueChange: (TextFieldValue) -> Unit
@@ -163,19 +171,8 @@ private fun ChatTextField(
                     )
                 }
 
-                IndicatingIconButton(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier.then(Modifier.size(circleButtonSize)),
-                    indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
-                ) {
-                    Icon(
+                QuickCommandButton (testCommands) { command -> onValueChange(TextFieldValue(command))}
 
-                        modifier = Modifier.rotate(-45f),
-                        imageVector = Icons.Default.AttachFile,
-                        contentDescription = stringResource(id = R.string.cd_btn_attach_file),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
-                    )
-                }
                 AnimatedVisibility(visible = empty) {
                     IndicatingIconButton(
                         onClick = { /*TODO*/ },
@@ -194,7 +191,60 @@ private fun ChatTextField(
     }
 }
 
+@Composable
+fun QuickCommandButton(
+    testCommands: List<String>,
+    onClick: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
+    Column {
+        IndicatingIconButton(
+            onClick = { expanded = true },
+            modifier = Modifier.size(circleButtonSize),
+            indication = rememberRipple(bounded = false, radius = circleButtonSize / 2)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Api,
+                contentDescription = stringResource(id = R.string.cd_btn_quick_command),
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.65f)
+            )
+        }
+    }
+
+    Box(modifier = Modifier.offset(x = 1000.dp, y = 100.dp)) {  // Right align
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column {
+                QuickCommandMenuItem("<BREAK>", onClick) { expanded = false }
+                for (command in testCommands) {
+                    QuickCommandMenuItem(command, onClick) { expanded = false }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuickCommandMenuItem(
+    command: String,
+    onClick: (String) -> Unit,
+    onItemClick: () -> Unit
+) {
+    DropdownMenuItem(
+        modifier = Modifier
+            .padding(vertical = 2.dp)
+            .background(MaterialTheme.colorScheme.background),
+        onClick = {
+            onClick(command)
+            onItemClick()
+        },
+        text = { Text(command) }
+    )
+}
 
 @Preview
 @Composable
@@ -202,6 +252,7 @@ private fun ChatInputPreview() {
     ARATheme {
         ChatInput(
             true,
+            listOf("test"),
             remember { mutableStateOf (TextFieldValue("")) },
             onMicToggle = {},
             onMessageSent = {}

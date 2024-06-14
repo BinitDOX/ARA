@@ -1,17 +1,25 @@
 package com.dox.ara.service
 
 import android.content.Intent
+import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import com.dox.ara.R
+import com.dox.ara.utility.Constants
 
 
-class MediaPlaybackService : MediaSessionService() {
+class AssistantSpeechService : MediaSessionService() {
     private var mediaSession: MediaSession? = null
+    private val notificationId = 20
 
+
+    @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
 
@@ -24,8 +32,17 @@ class MediaPlaybackService : MediaSessionService() {
 
         // Initialize MediaSession
         mediaSession = MediaSession.Builder(this, exoPlayer)
+            .setId("assistant_speech_session")
             //.setSessionActivity(/* pendingIntent to launch activity */) TODO: Link to chat
             .build()
+
+        val notificationProvider = DefaultMediaNotificationProvider.Builder(this)
+            .setNotificationId(notificationId)
+            .setChannelId(Constants.SPEECH_NOTIFICATION_CHANNEL_ID)
+            .setChannelName(R.string.speech_notification_channel_name)
+            .build()
+
+        setMediaNotificationProvider(notificationProvider)
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

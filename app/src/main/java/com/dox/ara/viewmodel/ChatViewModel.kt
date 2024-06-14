@@ -101,7 +101,7 @@ class ChatViewModel @Inject constructor(
 
     private fun getChat(){
         viewModelScope.launch {
-            chatRepository.getChat(chatId).flowOn(Dispatchers.IO).collect { chat: Chat ->
+            chatRepository.getChatFlow(chatId).flowOn(Dispatchers.IO).collect { chat: Chat ->
                 _chat.update { chat }
             }
         }
@@ -117,10 +117,50 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun toggleShowFailedMessages() {
+        viewModelScope.launch {
+            _chat.value?.let { chat ->
+                val updatedChat = chat.copy(showFailedMessages = !chat.showFailedMessages)
+                _chat.value = updatedChat
+                chatRepository.updateChat(updatedChat)
+            }
+        }
+    }
+
+    fun toggleShowCommands() {
+        viewModelScope.launch {
+            _chat.value?.let { chat ->
+                val updatedChat = chat.copy(showCommands = !chat.showCommands)
+                _chat.value = updatedChat
+                chatRepository.updateChat(updatedChat)
+            }
+        }
+    }
+
+    fun toggleShowTokens() {
+        viewModelScope.launch {
+            _chat.value?.let { chat ->
+                val updatedChat = chat.copy(showTokens = !chat.showTokens)
+                _chat.value = updatedChat
+                chatRepository.updateChat(updatedChat)
+            }
+        }
+    }
+
     fun toggleAutoPlaybackAudio() {
         viewModelScope.launch {
             _chat.value?.let { chat ->
                 val updatedChat = chat.copy(autoPlaybackAudio = !chat.autoPlaybackAudio)
+                _chat.value = updatedChat
+                chatRepository.updateChat(updatedChat)
+            }
+        }
+    }
+
+    fun toggleAutoResponses() {
+        viewModelScope.launch {
+            _chat.value?.let { chat ->
+                val updatedChat = chat.copy(autoResponses = !chat.autoResponses)
                 _chat.value = updatedChat
                 chatRepository.updateChat(updatedChat)
             }
@@ -203,14 +243,20 @@ class ChatViewModel @Inject constructor(
             timestamp = Instant.now().toEpochMilli(),
             quotedId = quotedMessageId,
             from = Role.USER,
-            status = MessageStatus.PENDING
+            status = MessageStatus.BLOCKED
         )
 
         messageRepository.saveMessage(message)
         val commandResponses = assistantRepository.parseAndExecuteCommands(messageContent)
         for (commandResponse in commandResponses) {
-            assistantRepository.buildAndSaveSystemMessage(commandResponse, true, chatId, quotedMessageId)
+            assistantRepository.buildAndSaveSystemMessage(
+                commandResponse.message,  chatId, false, quotedMessageId, true)
         }
+    }
+
+    fun getAllTestCommandUsages(): List<String> {
+        return assistantRepository.getAllCommandUsages()
+            .map {"<TEST> $it"}
     }
 
     fun playMessageAudio(messageId: Long, content: String, timestamp: Long) {
@@ -229,7 +275,7 @@ class ChatViewModel @Inject constructor(
                 val year = dateTime.year
 
                 val mediaItem = MediaItem.Builder()
-                    .setMediaId("Media-${chatId}")
+                    .setMediaId("Speech-${chatId}")
                     .setUri(source)
                     .setMediaMetadata(
                         MediaMetadata.Builder()
@@ -244,7 +290,7 @@ class ChatViewModel @Inject constructor(
                         )
                     .build()
 
-                mediaControllerManager.play(mediaItem)
+                mediaControllerManager.playSpeech(mediaItem)
                 mediaPlayerMessageId = messageId
             } else {
                 Timber.e("[${::playMessageAudio.name}] Audio file not found for messageId: $messageId")
@@ -255,7 +301,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun toggleMessageAudio() {
-        mediaControllerManager.togglePlayPause()
+        mediaControllerManager.toggleSpeechPlayPause()
     }
 
     fun startListening() {

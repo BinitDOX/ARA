@@ -19,6 +19,7 @@
     <string name="cd_btn_send_message">Send Message Button</string>
     <string name="cd_btn_camera">Camera Button</string>
     <string name="cd_btn_attach_file">Attach File Button</string>
+    <string name="cd_btn_quick_command">Quick Command Button</string>
     <string name="cd_btn_emoji_picker">Emoji Picker Button</string>
     <string name="cd_btn_delete_alarm">Delete Alarm Button</string>
 
@@ -33,12 +34,17 @@
     <string name="btn_delete_message">Delete message</string>
     <string name="btn_edit_message">Edit message</string>
     <string name="btn_reply_message">Reply message</string>
+    <string name="btn_copy_message">Copy message</string>
 
     <string name="btn_auto_playback_audio">Auto playback audio</string>
     <string name="btn_get_assistant_response">Get response</string>
     <string name="btn_set_assistant_as_default">Set as default</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_ok">OK</string>
+    <string name="btn_settings">Settings</string>
+    <string name="btn_save_settings">SAVE</string>
+    <string name="btn_auto_responses">Auto responses</string>
+    <string name="btn_show_failed_messages">Show failed messages</string>
 
     <!--    Placeholder Text-->
     <string name="placeholder_message">Message</string>
@@ -53,14 +59,16 @@
     <string name="placeholder_assistant_rvc_voice">RVC Voice (STS)</string>
     <string name="placeholder_assistant_prompt">Instruction Prompt</string>
     <string name="placeholder_assistant_edge_pitch">Edge Voice Pitch</string>
-    <string name="btn_copy_message">Copy message</string>
     <string name="placeholder_base_url">Base URL</string>
     <string name="placeholder_payment_code">Payment Code</string>
     <string name="placeholder_device_unlock_code">Device Unlock Code</string>
     <string name="placeholder_assistant_open_trigger_sequence">Assistant Open Trigger Sequence</string>
     <string name="placeholder_assistant_listen_trigger_sequence">Assistant Listen Trigger Sequence</string>
-    <string name="btn_settings">Settings</string>
-    <string name="btn_save_settings">SAVE</string>
+    <string name="placeholder_assistant_idle_auto_response_time">Assistant Idle Auto Response Time (Hrs)</string>
+    <string name="btn_show_commands">Show commands</string>
+    <string name="btn_show_tokens">Show Tokens</string>
+    <string name="music_notification_channel_name">ARA-Music</string>
+    <string name="speech_notification_channel_name">ARA-Speech</string>
 
 
 </resources>

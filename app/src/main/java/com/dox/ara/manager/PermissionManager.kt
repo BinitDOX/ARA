@@ -42,12 +42,17 @@ class PermissionManager @Inject constructor(@ApplicationContext private val cont
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.READ_CALL_LOG,
                 Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.ANSWER_PHONE_CALLS
+                Manifest.permission.ANSWER_PHONE_CALLS,
+                Manifest.permission.READ_EXTERNAL_STORAGE
             )
         )
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
             permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsToRequest.add(Manifest.permission.READ_MEDIA_AUDIO)
         }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE){

@@ -84,8 +84,7 @@ class EventRepository @Inject constructor(
             val messageId = messageRepository.saveMessage(message)
             uploadSystemMessage(messageId, chatId.toLong(), eventResponse.getUserInput)
         } else {
-            message.status = MessageStatus.FAILED
-            messageRepository.saveMessage(message)
+            messageRepository.saveMessage(message.copy(status = MessageStatus.FAILED))
             Timber.e("[${::handleEvent.name}] No connection to backend, event message not uploaded")
         }
     }

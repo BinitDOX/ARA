@@ -35,6 +35,7 @@ object Constants {
     const val DYNAMIC_URL_KEY = "dynamic_url"
     const val PAYMENT_CODE_KEY = "payment_code"
     const val DEVICE_UNLOCK_CODE_KEY = "device_unlock"
+    const val ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY = "assistant_idle_auto_response_time"
     const val ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY = "assistant_open_trigger_sequence"
     const val ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY = "assistant_listen_trigger_sequence"
 
@@ -70,11 +71,13 @@ object Constants {
     const val SILENT_NOTIFICATION_CHANNEL_ID = "${APP_ID}-silent"
     const val SILENT_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Silent"
     const val ALERT_NOTIFICATION_CHANNEL_ID = "${APP_ID}-alert"
-    const val ALERT_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-alert"
+    const val ALERT_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Alert"
     const val MAIN_NOTIFICATION_CHANNEL_ID = "${APP_ID}-main"
     const val MAIN_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Main"
-
-
+    const val MUSIC_NOTIFICATION_CHANNEL_ID = "${APP_ID}-music"
+    const val MUSIC_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Music"
+    const val SPEECH_NOTIFICATION_CHANNEL_ID = "${APP_ID}-speech"
+    const val SPEECH_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Speech"
 
 
     const val FCM_TOKEN = "fcm_token"

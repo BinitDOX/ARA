@@ -10,6 +10,7 @@ import com.dox.ara.repository.ChatRepository
 import com.dox.ara.repository.MessageRepository
 import com.dox.ara.requestdto.MessageRequest
 import com.dox.ara.ui.data.MessageStatus
+import com.dox.ara.ui.data.Role
 import com.dox.ara.utility.Constants
 import com.dox.ara.utility.Constants.BREAK
 import dagger.assisted.Assisted
@@ -46,7 +47,7 @@ class MessageWorker @AssistedInject constructor(
         val assistantId = chatRepository.getAssistantId(chatId = message.chatId)
         if(assistantId == null) {
             Timber.e("[${::doWork.name}] [${Constants.Entity.CHAT}] Entity not found with id: $id")
-            messageRepository.updateMessageStatus(message, MessageStatus.FAILED)
+            messageRepository.updateMessage(message.copy(status = MessageStatus.FAILED))
             return Result.success()
         }
 
@@ -54,6 +55,12 @@ class MessageWorker @AssistedInject constructor(
             Timber.e("[${::doWork.name}] [${Constants.Entity.MESSAGE}] " +
                     "Entity status is not ${MessageStatus.PENDING}: ${message.status}")
             return Result.success()
+        }
+
+        val getAssistantResponse = !message.content.endsWith(BREAK)
+        if(message.from == Role.SYSTEM && !getAssistantResponse){
+            message.content.replace(BREAK, "")
+            messageRepository.updateMessage(message)
         }
 
         val messageRequest = MessageRequest(
@@ -71,9 +78,9 @@ class MessageWorker @AssistedInject constructor(
             val response = messageAPI.upload(messageRequest)
             if (response.isSuccessful && response.body()?.isSuccess == true) {
                 Timber.d("[${::doWork.name}] [${Constants.Entity.MESSAGE}] Response: " + response.body()?.payload)
-                messageRepository.updateMessageStatus(message, MessageStatus.DELIVERED)
+                messageRepository.updateMessage(message.copy(status = MessageStatus.DELIVERED))
 
-                if(!message.content.endsWith(BREAK)) {
+                if(getAssistantResponse) {
                     CoroutineScope(Dispatchers.IO).launch {
                         assistantRepository.getAssistantResponse(assistantId, message.chatId, autoPromptUser)
                     }
@@ -83,12 +90,12 @@ class MessageWorker @AssistedInject constructor(
             } else {
                 Timber.e("[${::doWork.name}] [${Constants.Entity.MESSAGE}] Response: " +
                         if (!response.isSuccessful) response.errorBody().toString() else response.body().toString())
-                messageRepository.updateMessageStatus(message, MessageStatus.FAILED)
+                messageRepository.updateMessage(message.copy(status = MessageStatus.FAILED))
                 Result.success()
             }
         } catch (e: Exception) {
             Timber.e("[${::doWork.name}] [${Constants.Entity.MESSAGE}] Exception: $e")
-            messageRepository.updateMessageStatus(message, MessageStatus.FAILED)
+            messageRepository.updateMessage(message.copy(status = MessageStatus.FAILED))
             Result.success()
         }
     }

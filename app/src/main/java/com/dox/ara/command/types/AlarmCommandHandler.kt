@@ -1,6 +1,7 @@
 package com.dox.ara.command.types
 
 import com.dox.ara.command.CommandHandler
+import com.dox.ara.command.CommandHandlerFactory.CommandType.ALARM
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.model.Alarm
 import com.dox.ara.repository.AlarmRepository
@@ -22,7 +23,7 @@ class AlarmCommandHandler @AssistedInject constructor(
     private lateinit var description: String
 
     override fun help(): String {
-        return "Usage: alarm('dd-mm-yyyy hh:mm', 'description')"
+        return "[${ALARM.name.lowercase()}('dd-mm-yyyy hh:mm', 'description')]"
     }
 
     override fun parseArguments() {

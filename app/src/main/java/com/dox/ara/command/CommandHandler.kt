@@ -9,7 +9,7 @@ abstract class CommandHandler(
         fun makeResponseFromException(exception: IllegalArgumentException): CommandResponse {
             return CommandResponse(
                 isSuccess = false,
-                message = exception.message ?: "",
+                message = exception.message + "\nInform and ask the user before trying to execute the command again",
                 sendResponse = !exception.message.isNullOrBlank(),
                 getResponse = !exception.message.isNullOrBlank(),
             )
@@ -57,6 +57,10 @@ abstract class CommandHandler(
         }
 
         return execute()
+    }
+
+    fun getUsage(): String {
+        return help()
     }
 
     fun getHelp(): CommandResponse {
