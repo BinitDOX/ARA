@@ -42,9 +42,11 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 7. Set the NGROK_AUTHTOKEN under 'Constants' with the auth token in Step 2.
 8. Set the NGROK_STATIC_DOMAIN under 'Constants' with the static domain in Step 3.
 9. Click Run All and wait for ~15m for the first run. Successive runs will take ~5min, given that file persistence is on.
-10. You can verify if the server has started correctly by openening the base backend URL from Step 4 in the browser.
-11. If all is done correctly, you should see something like {"detail":"not found"}
-12. Use the notebook in this interactive mode only. If you 'Save and commit', the file persistence (conversation data) is lost.
+10. It may get stuck while downloading RVC Assets. If the logs under this cell states: "all download taks finished", just 'Cancel' and 'Run All' again.
+11. Under 'EXECUTE' section you should see server logs like: "Started server process", after the start-up.
+12. You can verify if the server has started correctly by openening the base backend URL from Step 4 in the browser.
+13. If all is done correctly, you should see something like {"detail":"Not found"}
+14. Use the notebook in this interactive mode only. If you 'Save and commit', the file persistence (conversation data) is lost.
 
 // Add more later
 
