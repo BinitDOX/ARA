@@ -39,7 +39,7 @@ fun ReceivedMessageRow(
     receiverNameColor: Color = MaterialTheme.colorScheme.primary,
     text: String,
     quotedMessage: String? = null,
-    quotedFrom: String? = null,
+    quotedFrom: String,
     quotedImage: Int? = null,
     quotedColor: Color = MaterialTheme.colorScheme.primary,
     quotedMessageColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),

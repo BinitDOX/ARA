@@ -8,6 +8,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.service.event.AssistantTriggerEvent
+import com.dox.ara.service.event.GoogleAssistantOverrideEvent
 import com.dox.ara.service.event.PaymentCommandEvent
 import com.dox.ara.service.event.PaymentCommandEvent.Companion.PAYMENT_QR_ROUTINE
 import com.dox.ara.service.event.PaymentCommandEvent.Companion.PAYMENT_UPI_ROUTINE
@@ -82,6 +83,8 @@ class EventListenerService : AccessibilityService() {
     lateinit var assistantTriggerEvent: AssistantTriggerEvent
     @Inject
     lateinit var paymentCommandEvent: PaymentCommandEvent
+    @Inject
+    lateinit var googleAssistantOverrideEvent: GoogleAssistantOverrideEvent
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         when (event.eventType) {
@@ -93,9 +96,14 @@ class EventListenerService : AccessibilityService() {
             AccessibilityEvent.TYPE_WINDOWS_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
                 /*val packageName = event.packageName?.toString() ?: return
-                if(packageName == PAYTM_PACKAGE_NAME){
+                if(packageName == ""){
+                    Timber.d("Package name: $packageName")
                     printEvent(event)
                 }*/
+
+                if(GoogleAssistantOverrideEvent.OVERRIDE_GOOGLE_ASSISTANT.toBoolean()){
+                    googleAssistantOverrideEvent.handleGoogleAssistantOverride(event, ::performGlobalAction)
+                }
 
                 if(QUICK_SETTINGS_ROUTINE.active){
                     settingCommandEvent.handleQuickSettingsEvent(event, ::performGlobalAction)
@@ -137,7 +145,7 @@ class EventListenerService : AccessibilityService() {
             val childNode = nodeInfo.getChild(i)
             if (childNode != null) {
                 val childPath = "$path.$i"
-                val isInputField = childNode.isEditable || childNode.isTextEntryKey
+                val isInputField = childNode.isEditable // || childNode.isTextEntryKey
                 Timber.d("[V] Path:[$childPath] Info:[${childNode.viewIdResourceName} ${childNode.text}" +
                         " ${childNode.contentDescription}] IsClickable:${childNode.isCheckable||childNode.isClickable}" +
                         " IsInput:${isInputField}")

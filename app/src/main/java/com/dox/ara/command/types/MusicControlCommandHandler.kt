@@ -6,6 +6,8 @@ import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.MediaControllerManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
@@ -42,54 +44,58 @@ class MusicControlCommandHandler @AssistedInject constructor(
 
     override suspend fun execute(): CommandResponse {
         return try {
-            if(mediaControllerManager.isMusicStopped()){
-                return CommandResponse(
-                    message = "No music is currently playing, command not executed",
-                    isSuccess = false,
-                    getResponse = true
-                )
-            }
-
-            when (musicCommand) {
-                MusicCommand.RESUME -> {
-                    return if(mediaControllerManager.isMusicPlaying()){
-                        CommandResponse(
-                            message = "Music is already playing",
-                            isSuccess = true,
-                            getResponse = true
-                        )
-                    } else {
-                        mediaControllerManager.toggleMusicPlayPause()
-                        CommandResponse(
-                            message = "Music successfully resumed",
-                            isSuccess = true,
-                            getResponse = false
-                        )
-                    }
-                }
-                MusicCommand.PAUSE -> {
-                    return if(!mediaControllerManager.isMusicPlaying()){
-                        CommandResponse(
-                            message = "Music is already paused",
-                            isSuccess = true,
-                            getResponse = true
-                        )
-                    } else {
-                        mediaControllerManager.toggleMusicPlayPause()
-                        CommandResponse(
-                            message = "Music successfully paused",
-                            isSuccess = true,
-                            getResponse = false
-                        )
-                    }
-                }
-                MusicCommand.STOP -> {
-                    mediaControllerManager.stopMusic()
-                    CommandResponse(
-                        message = "Music successfully stopped",
-                        isSuccess = true,
-                        getResponse = false
+            withContext(Dispatchers.Main) {
+                if (mediaControllerManager.isMusicStopped()) {
+                    return@withContext CommandResponse(
+                        message = "No music is currently playing, command not executed",
+                        isSuccess = false,
+                        getResponse = true
                     )
+                }
+
+                when (musicCommand) {
+                    MusicCommand.RESUME -> {
+                        return@withContext if (mediaControllerManager.isMusicPlaying()) {
+                            CommandResponse(
+                                message = "Music is already playing",
+                                isSuccess = true,
+                                getResponse = true
+                            )
+                        } else {
+                            mediaControllerManager.toggleMusicPlayPause()
+                            CommandResponse(
+                                message = "Music successfully resumed",
+                                isSuccess = true,
+                                getResponse = false
+                            )
+                        }
+                    }
+
+                    MusicCommand.PAUSE -> {
+                        return@withContext if (!mediaControllerManager.isMusicPlaying()) {
+                            CommandResponse(
+                                message = "Music is already paused",
+                                isSuccess = true,
+                                getResponse = true
+                            )
+                        } else {
+                            mediaControllerManager.toggleMusicPlayPause()
+                            CommandResponse(
+                                message = "Music successfully paused",
+                                isSuccess = true,
+                                getResponse = false
+                            )
+                        }
+                    }
+
+                    MusicCommand.STOP -> {
+                        mediaControllerManager.stopMusic()
+                        CommandResponse(
+                            message = "Music successfully stopped",
+                            isSuccess = true,
+                            getResponse = false
+                        )
+                    }
                 }
             }
         } catch (e: Exception) {

@@ -245,15 +245,25 @@ private fun AddProfilePicture(
         contentAlignment = Alignment.BottomEnd,
     ) {
         ProfilePicture(size = size, imageUri = imageUri)
-        Icon(
-            imageVector = Icons.Filled.Edit,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.tertiary,
+        Box (
             modifier = Modifier
-                .size(size / 4)
+                .size(size / 3)
+                .border(width = 6.dp, color = MaterialTheme.colorScheme.tertiary, CircleShape)
+                .padding(1.dp)
                 .background(MaterialTheme.colorScheme.primary, CircleShape)
-                .clickable { launcher.launch(arrayOf("image/*")) }
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+                    .clickable { launcher.launch(arrayOf("image/*")) }
             )
+        }
     }
 }
 

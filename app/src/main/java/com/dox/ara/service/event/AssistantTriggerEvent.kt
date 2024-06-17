@@ -44,6 +44,9 @@ class AssistantTriggerEvent @Inject constructor(
     private var assistantListenTriggerState = 0
     private var assistantListenTriggerJob: Job? = null
 
+    private var assistantOpenDebouncer = false
+    private var assistantListenDebouncer = false
+
 
     fun handleAssistantTriggerEvent(event: KeyEvent) {
         if(event.action == KeyEvent.ACTION_UP) {
@@ -112,32 +115,47 @@ class AssistantTriggerEvent @Inject constructor(
     }
 
     private fun validateDefaultAssistant(): String? {
-        Timber.d("[${::assistantOpen.name}] Trigger sequence detected, launching assistant")
         val chatId = sharedPreferencesManager.get(DEFAULT_CHAT_ID_KEY)
-        Timber.d("[${::assistantOpen.name}] Default Chat ID: $chatId")
+        Timber.d("[${::validateDefaultAssistant.name}] Default Chat ID: $chatId")
         if(chatId.isNullOrBlank()){
-            Timber.e("[${::assistantOpen.name}] No default chat ID found, skipping launch")
+            Timber.e("[${::validateDefaultAssistant.name}] No default chat ID found, skipping event")
             return null
         }
         return chatId
     }
 
     private fun assistantOpen(){
-        val chatId = validateDefaultAssistant() ?: return
+        if(!assistantOpenDebouncer) {
+            assistantOpenDebouncer = true
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(3000)
+                assistantOpenDebouncer = false
+            }
+            Timber.d("[${::assistantOpen.name}] Trigger sequence detected, launching assistant")
+            val chatId = validateDefaultAssistant() ?: return
 
-        val intent = Intent(context, MainActivity::class.java)
-        intent.putExtra(START_ROUTE_EXTRA, RouteItem.Home.route)
-        intent.putExtra(START_PAGE_EXTRA, NavItem.Chats.page)
-        intent.putExtra(NAVIGATE_TO_EXTRA, "${RouteItem.Chat.route}/$chatId")
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        context.startActivity(intent)
+            val intent = Intent(context, MainActivity::class.java)
+            intent.putExtra(START_ROUTE_EXTRA, RouteItem.Home.route)
+            intent.putExtra(START_PAGE_EXTRA, NavItem.Chats.page)
+            intent.putExtra(NAVIGATE_TO_EXTRA, "${RouteItem.Chat.route}/$chatId")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(intent)
+        }
     }
 
-    private fun assistantListen(){
-        val chatId = validateDefaultAssistant() ?: return
+    fun assistantListen(){
+        if(!assistantListenDebouncer) {
+            assistantListenDebouncer = true
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(3000)
+                assistantListenDebouncer = false
+            }
+            Timber.d("[${::assistantListen.name}] Trigger sequence detected, listening for user input")
+            val chatId = validateDefaultAssistant() ?: return
 
-        CoroutineScope(Dispatchers.IO).launch {
-            eventRepository.startListeningForUserInput(chatId.toLong())
+            CoroutineScope(Dispatchers.IO).launch {
+                eventRepository.startListeningForUserInput(chatId.toLong())
+            }
         }
     }
 }

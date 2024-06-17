@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -66,6 +67,9 @@ class ChatViewModel @Inject constructor(
     private val _assistant = MutableStateFlow<Assistant?>(Assistant.getEmptyAssistant())
     val assistant = _assistant.asStateFlow()
 
+    private val _assistantColor = MutableStateFlow(getRandomColor())
+    val assistantColor = _assistantColor.asStateFlow()
+
     private val _chat = MutableStateFlow<Chat?>(null)
     val chat = _chat.asStateFlow()
 
@@ -81,7 +85,6 @@ class ChatViewModel @Inject constructor(
 
     val colorUser = getRandomColor()
     val colorSystem = getRandomColor()
-    val colorAI = getRandomColor()
 
     init {
         speechToTextListener.initialize()
@@ -95,6 +98,10 @@ class ChatViewModel @Inject constructor(
             val assistantId = chatRepository.getAssistantId(chatId) ?: -1
             assistantRepository.getAssistant(assistantId).flowOn(Dispatchers.IO).collect { assistant: Assistant ->
                 _assistant.update { assistant }
+                try {
+                _assistantColor.update {
+                    assistant.color.toColorInt().let { Color(it) }
+                } } catch (_: Exception) {}
             }
         }
     }

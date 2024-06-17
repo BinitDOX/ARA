@@ -1,10 +1,9 @@
 package com.dox.ara.model
 
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "assistant", indices = [Index(value = ["name"], unique = true)])
+@Entity(tableName = "assistant")
 data class Assistant (
     @PrimaryKey(autoGenerate = true)
     val id: Long,

@@ -3,11 +3,13 @@ package com.dox.ara.viewmodel
 import androidx.lifecycle.ViewModel
 import com.dox.ara.manager.SharedPreferencesManager
 import com.dox.ara.service.event.AssistantTriggerEvent
+import com.dox.ara.service.event.GoogleAssistantOverrideEvent
 import com.dox.ara.utility.Constants.ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY
 import com.dox.ara.utility.Constants.ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY
 import com.dox.ara.utility.Constants.ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY
 import com.dox.ara.utility.Constants.DEVICE_UNLOCK_CODE_KEY
 import com.dox.ara.utility.Constants.DYNAMIC_URL_KEY
+import com.dox.ara.utility.Constants.OVERRIDE_GOOGLE_ASSISTANT_KEY
 import com.dox.ara.utility.Constants.PAYMENT_CODE_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +38,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _assistantListenTriggerSequence = MutableStateFlow("")
     val assistantListenTriggerSequence = _assistantListenTriggerSequence.asStateFlow()
+
+    private val _overrideGoogleAssistant = MutableStateFlow("")
+    val overrideGoogleAssistant = _overrideGoogleAssistant.asStateFlow()
 
     init {
         getSettings()
@@ -69,6 +74,10 @@ class SettingsViewModel @Inject constructor(
         _assistantListenTriggerSequence.value = value
     }
 
+    fun setOverrideGoogleAssistant(value: String) {
+        _overrideGoogleAssistant.value = value
+    }
+
     fun setIsSaved(value: Boolean) {
         _isSaved.value = value
     }
@@ -84,6 +93,7 @@ class SettingsViewModel @Inject constructor(
         _assistantIdleAutoResponseTime.value = sharedPreferencesManager.get(ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY) ?: ""
         _assistantOpenTriggerSequence.value = sharedPreferencesManager.get(ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY) ?: ""
         _assistantListenTriggerSequence.value = sharedPreferencesManager.get(ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY) ?: ""
+        _overrideGoogleAssistant.value = sharedPreferencesManager.get(OVERRIDE_GOOGLE_ASSISTANT_KEY) ?: ""
     }
 
     fun saveSettings() {
@@ -97,8 +107,10 @@ class SettingsViewModel @Inject constructor(
         sharedPreferencesManager.save(ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY, _assistantIdleAutoResponseTime.value)
         sharedPreferencesManager.save(ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY, _assistantOpenTriggerSequence.value)
         sharedPreferencesManager.save(ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY, _assistantListenTriggerSequence.value)
+        sharedPreferencesManager.save(OVERRIDE_GOOGLE_ASSISTANT_KEY, _overrideGoogleAssistant.value)
 
         AssistantTriggerEvent.assistantOpenTriggerSequence = _assistantOpenTriggerSequence.value
         AssistantTriggerEvent.assistantListenTriggerSequence = _assistantListenTriggerSequence.value
+        GoogleAssistantOverrideEvent.OVERRIDE_GOOGLE_ASSISTANT = _overrideGoogleAssistant.value
     }
 }

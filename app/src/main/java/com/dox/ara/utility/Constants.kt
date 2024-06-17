@@ -38,6 +38,7 @@ object Constants {
     const val ASSISTANT_IDLE_AUTO_RESPONSE_TIME_KEY = "assistant_idle_auto_response_time"
     const val ASSISTANT_OPEN_TRIGGER_SEQUENCE_KEY = "assistant_open_trigger_sequence"
     const val ASSISTANT_LISTEN_TRIGGER_SEQUENCE_KEY = "assistant_listen_trigger_sequence"
+    const val OVERRIDE_GOOGLE_ASSISTANT_KEY = "override_google_assistant"
 
     // Message Command Constants
     const val BREAK = "<BREAK>"
@@ -58,7 +59,10 @@ object Constants {
 
     // Package Constants
     const val SETTINGS_PACKAGE_NAME = "com.android.settings"
+    const val SYSTEM_UI_PACKAGE_NAME = "com.android.systemui"
+    const val BLUETOOTH_PACKAGE_NAME = "com.oplus.wirelesssettings"
     const val PAYTM_PACKAGE_NAME = "net.one97.paytm"
+    const val GOOGLE_ASSISTANT_PACKAGE_NAME = "com.google.android.googlequicksearchbox"
 
     // Directory Constants
     const val AUDIO_DIR = "${APP_ID}_audio"

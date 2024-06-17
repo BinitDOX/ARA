@@ -6,8 +6,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -26,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -66,6 +70,7 @@ fun SettingsScreen(
     val assistantIdleAutoResponseTime by settingsViewModel.assistantIdleAutoResponseTime.collectAsStateWithLifecycle()
     val assistantOpenTriggerSequence by settingsViewModel.assistantOpenTriggerSequence.collectAsStateWithLifecycle()
     val assistantListenTriggerSequence by settingsViewModel.assistantListenTriggerSequence.collectAsStateWithLifecycle()
+    val overrideGoogleAssistant by settingsViewModel.overrideGoogleAssistant.collectAsStateWithLifecycle()
 
     val isSaved by settingsViewModel.isSaved.collectAsStateWithLifecycle()
 
@@ -137,7 +142,7 @@ fun SettingsScreen(
                 Text(
                     text = "This is an optional payment code that may be used with " +
                             "payment applications for automatic payment. The last confirmation of the " +
-                            "payment will still need to be completed by the user",
+                            "payment will still need to be completed by the user, for obvious reasons.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
@@ -166,7 +171,8 @@ fun SettingsScreen(
 
                 Text(
                     text = "This is an optional device unlock code that may be used when " +
-                            "unlocking the device is necessary, for performing certain actions",
+                            "unlocking the device is necessary, for performing certain actions " +
+                            "[CURRENTLY NOT BEING USED]",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
@@ -188,8 +194,9 @@ fun SettingsScreen(
                 )
 
                 Text(
-                    text = "If this is set, then the system will automatically prompt each assistant to " +
-                            "start a conversation after the specified number of hours of inactivity. ",
+                    text = "If this is set, then the system will automatically prompt each assistant, " +
+                            "which has 'Auto responses' setting enabled in the chat, to " +
+                            "start a conversation after the specified number of hours of inactivity.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
@@ -230,6 +237,34 @@ fun SettingsScreen(
                     text = "This is an optional custom trigger sequence that can instantly " +
                             "start listening to user voice input, using sequential volume button presses. " +
                             "The sequence must only include 'U' for volume up and 'D' for volume down.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(interFieldSpacing))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Override Google Assistant",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Switch(
+                        checked = overrideGoogleAssistant.toBoolean(),
+                        onCheckedChange = {
+                            settingsViewModel.setOverrideGoogleAssistant(it.toString())
+                        }
+                    )
+                }
+
+                Text(
+                    text = "This will override the default Google Assistant assistant " +
+                            "by dismissing it, and instantly start listening to user voice input.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )

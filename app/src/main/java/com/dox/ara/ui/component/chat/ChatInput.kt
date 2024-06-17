@@ -171,7 +171,7 @@ private fun ChatTextField(
                     )
                 }
 
-                QuickCommandButton (testCommands) { command -> onValueChange(TextFieldValue(command))}
+                QuickCommandButton (testCommands) { command -> onValueChange(TextFieldValue("${input.text} $command"))}
 
                 AnimatedVisibility(visible = empty) {
                     IndicatingIconButton(

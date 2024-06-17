@@ -16,6 +16,9 @@ import com.truecrm.rat.utility.stringSimilarity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -95,7 +98,9 @@ class PlayMusicCommandHandler @AssistedInject constructor(
                         .build())
                     .build()
 
-                mediaControllerManager.playMusic(mediaItem)
+                CoroutineScope(Dispatchers.Main).launch {
+                    mediaControllerManager.playMusic(mediaItem)
+                }
                 return CommandResponse(true, "Playing '${songName}'", false)
             } else {
                 return CommandResponse(

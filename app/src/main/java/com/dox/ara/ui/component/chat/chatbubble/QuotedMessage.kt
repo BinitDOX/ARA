@@ -41,7 +41,7 @@ import com.dox.ara.R
 @Composable
 fun QuotedMessage(
     modifier: Modifier = Modifier,
-    quotedFrom: String? = null,
+    quotedFrom: String,
     quotedMessage: String? = null,
     quotedImage: Int? = null,
     quotedColor: Color = Color.Red,

@@ -41,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -82,6 +80,8 @@ fun ChatScreen(
     val assistant by chatViewModel.assistant.collectAsStateWithLifecycle()
     val chat by chatViewModel.chat.collectAsStateWithLifecycle()
 
+    val colorAI by chatViewModel.assistantColor.collectAsStateWithLifecycle()
+
     val speechToTextState by chatViewModel.speechToTextState.collectAsStateWithLifecycle()
 
     var quotingMessage by remember { mutableStateOf<Message?>(null) }
@@ -89,12 +89,6 @@ fun ChatScreen(
     val testCommands = remember { chatViewModel.getAllTestCommandUsages() }
 
     val scrollState = rememberLazyListState()
-
-    val colorAI = try {
-        assistant?.color?.toColorInt()?.let { Color(it) } ?: chatViewModel.colorAI
-    } catch (e: Exception) {
-        chatViewModel.colorAI
-    }
 
     LaunchedEffect( messages.itemSnapshotList.items.size) {
         chatViewModel.markAsRead()
@@ -222,6 +216,7 @@ fun ChatScreen(
                                                 receiverNameColor = chatViewModel.colorSystem,
                                                 text = message.content,
                                                 quotedMessage = quotedMessage?.content,
+                                                quotedFrom = quotedFrom,
                                                 messageTime = chatViewModel.simpleDateFormat.format(
                                                     message.timestamp
                                                 ),
@@ -395,7 +390,7 @@ fun ChatScreen(
                         testCommands = testCommands,
                         onMessageSent = { messageContent ->
                             chatViewModel.viewModelScope.launch {
-                                if(messageContent.startsWith(TEST)){
+                                if(messageContent.contains(TEST)){
                                     chatViewModel.sendTestMessage(messageContent, quotingMessage?.id)
                                 } else {
                                     chatViewModel.sendMessage(messageContent, quotingMessage?.id)

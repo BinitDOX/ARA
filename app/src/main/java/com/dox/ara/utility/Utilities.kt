@@ -2,7 +2,6 @@ package com.truecrm.rat.utility
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
@@ -21,6 +20,7 @@ import timber.log.Timber
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.util.Base64
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -80,27 +80,8 @@ inline fun <reified T : ListenableWorker> scheduleJob(context: Context, inputDat
     }
 }
 
-fun getGSFAndroidID(context: Context): String? {
-    val uri = Uri.parse("content://com.google.android.gsf.gservices")
-    val idKey = "android_id"
-    val params = arrayOf(idKey)
-    val c = context.contentResolver.query(uri, null, null, params, null)
-    if (c != null && (!c.moveToFirst() || c.columnCount < 2)) {
-        if (!c.isClosed) c.close()
-        return null
-    }
-    return try {
-        if (c != null) {
-            val result = java.lang.Long.toHexString(c.getString(1).toLong())
-            if (!c.isClosed) c.close()
-            result
-        } else {
-            null
-        }
-    } catch (e: NumberFormatException) {
-        if (!c!!.isClosed) c.close()
-        null
-    }
+fun generateDeviceId(): String? {
+    return UUID.randomUUID().toString().replace("-", "").take(10)
 }
 
 fun encrypt(input: String, key: String): String {

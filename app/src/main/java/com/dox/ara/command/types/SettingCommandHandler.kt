@@ -15,6 +15,7 @@ import com.dox.ara.command.CommandHandlerFactory.CommandType.SETTING
 import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.PermissionManager
 import com.dox.ara.service.EventListenerService.Companion.startRoutine
+import com.dox.ara.service.event.SettingCommandEvent.Companion.BLUETOOTH_SUB_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.MOBILE_DATA_SUB_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.QUICK_SETTINGS_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.WIFI_SUB_ROUTINE
@@ -182,23 +183,19 @@ class SettingCommandHandler @AssistedInject constructor(
             return if (state) {
                 val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                context.startActivity(intent)
 
-                CommandResponse(
-                    isSuccess = true,
-                    message = "Bluetooth was turned on",
-                    getResponse = false
-                )
+                BLUETOOTH_SUB_ROUTINE.active = true
+                val response = startRoutine(context, QUICK_SETTINGS_ROUTINE, intent)
+                cancelAllSubRoutines()
+                response
             } else {
                 val intent = Intent("android.bluetooth.adapter.action.REQUEST_DISABLE")
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                context.startActivity(intent)
 
-                CommandResponse(
-                    isSuccess = true,
-                    message = "Bluetooth was turned off",
-                    getResponse = false
-                )
+                BLUETOOTH_SUB_ROUTINE.active = true
+                val response = startRoutine(context, QUICK_SETTINGS_ROUTINE, intent)
+                cancelAllSubRoutines()
+                response
             }
         }
     }

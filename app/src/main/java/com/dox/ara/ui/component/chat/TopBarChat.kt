@@ -70,19 +70,19 @@ fun TopBarChat(
             chatViewModel.toggleShowSystemMessages()
         },
         ActionItem(R.string.btn_show_failed_messages,
-            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            if(chat?.showFailedMessages == true) Icons.Outlined.CheckCircle
             else Icons.Outlined.Circle,
             OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.toggleShowFailedMessages()
         },
         ActionItem(R.string.btn_show_commands,
-            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            if(chat?.showCommands == true) Icons.Outlined.CheckCircle
             else Icons.Outlined.Circle,
             OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.toggleShowCommands()
         },
         ActionItem(R.string.btn_show_tokens,
-            if(chat?.autoResponses == true) Icons.Outlined.CheckCircle
+            if(chat?.showTokens == true) Icons.Outlined.CheckCircle
             else Icons.Outlined.Circle,
             OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.toggleShowTokens()

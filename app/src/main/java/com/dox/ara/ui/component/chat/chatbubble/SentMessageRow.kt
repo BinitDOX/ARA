@@ -33,7 +33,7 @@ import com.dox.ara.ui.theme.ARATheme
 fun SentMessageRow(
     text: String,
     quotedMessage: String? = null,
-    quotedFrom: String? = null,
+    quotedFrom: String,
     quotedImage: Int? = null,
     quotedColor: Color = MaterialTheme.colorScheme.primary,
     quotedMessageColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
@@ -116,7 +116,8 @@ private fun SentMessageRowPreview(){
         SentMessageRow(
             text = "Hello, how are you?",
             messageTime = "12:00",
-            messageStatus = MessageStatus.READ
+            messageStatus = MessageStatus.READ,
+            quotedFrom = "A"
         )
     }
 }
@@ -131,7 +132,7 @@ private fun SentMessageQuotedRowPreview(){
             messageTime = "12:00",
             messageStatus = MessageStatus.READ,
             quotedMessage = "Hello, how are you?",
-
+            quotedFrom = "B",
         )
     }
 }
