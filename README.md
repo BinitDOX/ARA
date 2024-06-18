@@ -36,13 +36,13 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 1. Make a <a href="https://www.kaggle.com/">kaggle</a> account and verify using phone to get ~30hrs of weekly GPU.
 2. Make an <a href="https://ngrok.com/">ngrok</a> account and get your auth token from <a href="https://dashboard.ngrok.com/get-started/your-authtoken">here</a>.
 3. Also create a free static domain from <a href="https://dashboard.ngrok.com/cloud-edge/domains">here</a> and copy the URL.
-4. The URL should look something like: 'stallion-uncommon-exact.ngrok-free.app' (Do not copy the 'http://' prefix or the '/' suffix)
+4. The URL should look something like: 'stallion-uncommon-exact.ngrok-free.app'<br/>(Do not copy the 'http://' prefix or the '/' suffix)
 5. Go to <a href="https://www.kaggle.com/code/yeeandres/ara-server">this</a> notebook and click 'Copy & Edit'
 6. Set the accelerator as GPU P100 under notebook options if not already selected.
 7. Set the persistence to Files Only under notebook options if not already selected.
 8. Set the NGROK_AUTHTOKEN under 'Constants' with the auth token in Step-2.
 9. Set the NGROK_STATIC_DOMAIN under 'Constants' with the static domain in Step-3.
-10. Click Run All and wait for ~15m for the first run. Successive runs will take ~5min, given that file persistence is on.
+10. Click Run All and wait for ~15m for the first run. Successive runs will take ~5min, if file persistence is on.
 11. It will/may get stuck while downloading RVC Assets. (~6th cell under 'SETUP')
 12. When the last log under this cell states: "all download taks finished", just 'Cancel' and 'Run All' again (~5min).
 13. Under 'EXECUTE' section you should see server logs like: "Started server process", after the start-up.
