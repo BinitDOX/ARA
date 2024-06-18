@@ -60,17 +60,17 @@ class EventRepository @Inject constructor(
     }
 
 
-    suspend fun handleEvent(eventResponse: EventResponse) {
-        val chatId = sharedPreferencesManager.get(DEFAULT_CHAT_ID_KEY)
+    suspend fun handleEvent(eventResponse: EventResponse, chatId: String? = null) {
+        val cId = chatId ?: sharedPreferencesManager.get(DEFAULT_CHAT_ID_KEY)
 
-        if (chatId == null) {
+        if (cId == null) {
             Timber.w("[${::handleEvent.name}] Default assistant is not set")
             return
         }
 
         val message = Message(
             id = 0,
-            chatId = chatId.toLong(),
+            chatId = cId.toLong(),
             content = eventResponse.message + if (!eventResponse.getResponse)
                 Constants.BREAK else "",
             timestamp = Instant.now().toEpochMilli(),
@@ -82,7 +82,7 @@ class EventRepository @Inject constructor(
         val response = authenticationAPI.getStatus()
         if(response.isSuccessful && response.body()?.isSuccess == true){
             val messageId = messageRepository.saveMessage(message)
-            uploadSystemMessage(messageId, chatId.toLong(), eventResponse.getUserInput)
+            uploadSystemMessage(messageId, cId.toLong(), eventResponse.getUserInput)
         } else {
             messageRepository.saveMessage(message.copy(status = MessageStatus.FAILED))
             Timber.e("[${::handleEvent.name}] No connection to backend, event message not uploaded")

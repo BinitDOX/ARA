@@ -16,7 +16,7 @@ android {
     properties.load(FileInputStream(propertiesFile))
 
     signingConfigs {
-        if (mode == "test") {
+        if (mode == "test" || mode == "dev") {
             getByName("debug") {
                 storeFile = rootProject.file("app/keystore")
                 storePassword = "ara-password"

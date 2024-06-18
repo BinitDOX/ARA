@@ -53,7 +53,7 @@ class AutoResponseWorker @AssistedInject constructor (
                     )
                     val chat = chatRepository.getChat(message.chatId)
                     if(chat.autoResponses) {
-                        eventRepository.handleEvent(eventResponse)
+                        eventRepository.handleEvent(eventResponse, chat.id.toString())
                     }
                 }
             }

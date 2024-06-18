@@ -4,7 +4,6 @@ import com.dox.ara.manager.SharedPreferencesManager
 import com.dox.ara.repository.AuthenticationRepository
 import com.dox.ara.utility.Constants.AUTH_TOKEN_KEY
 import com.dox.ara.utility.Constants.DEVICE_ID_KEY
-import com.dox.ara.utility.Constants.DYNAMIC_URL_KEY
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -47,11 +46,6 @@ class AuthInterceptor @Inject constructor(
         request.addHeader("Authorization", "$authToken")
         request.addHeader("DeviceID", "$deviceId")
 
-        val url = sharedPrefsManager.get(DYNAMIC_URL_KEY)
-        if(!url.isNullOrEmpty()){
-            request.url(url)
-        }
-
         val response = chain.proceed(request.build())
 
         if (response.isSuccessful &&
@@ -78,6 +72,7 @@ class AuthInterceptor @Inject constructor(
                             .addHeader("Authorization", "$authToken")
                             .addHeader("DeviceID", "$deviceId")
                             .build()
+
                         return chain.proceed(newRequest)
                     }
                 }

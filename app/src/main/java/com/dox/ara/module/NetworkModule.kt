@@ -2,9 +2,10 @@ package com.dox.ara.module
 
 import com.dox.ara.api.AssistantAPI
 import com.dox.ara.api.AuthInterceptor
-import com.dox.ara.api.MessageAPI
-import com.dox.ara.utility.Constants
 import com.dox.ara.api.AuthenticationAPI
+import com.dox.ara.api.MessageAPI
+import com.dox.ara.api.UrlInterceptor
+import com.dox.ara.utility.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,11 +24,11 @@ import javax.net.ssl.X509TrustManager
 
 @Retention(AnnotationRetention.BINARY)
 @Qualifier
-annotation class WithInterceptor
+annotation class WithAuthInterceptor
 
 @Retention(AnnotationRetention.BINARY)
 @Qualifier
-annotation class WithoutInterceptor
+annotation class WithoutAuthInterceptor
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -42,8 +43,9 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    @WithInterceptor
-    fun providesOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    @WithAuthInterceptor
+    fun providesOkHttpClient(authInterceptor: AuthInterceptor,
+                             urlInterceptor: UrlInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.HEADERS
         }
@@ -71,6 +73,7 @@ class NetworkModule {
         val trustManager = trustAllCerts[0] as X509TrustManager
 
         return OkHttpClient.Builder()
+            .addInterceptor(urlInterceptor)
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .sslSocketFactory(sslSocketFactory, trustManager)
@@ -80,8 +83,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    @WithoutInterceptor
-    fun providesOkHttpClientWithoutInterceptor(): OkHttpClient {
+    @WithoutAuthInterceptor
+    fun providesOkHttpClientWithoutInterceptor(urlInterceptor: UrlInterceptor): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -109,6 +112,7 @@ class NetworkModule {
         val trustManager = trustAllCerts[0] as X509TrustManager
 
         return OkHttpClient.Builder()
+            .addInterceptor(urlInterceptor)
             .addInterceptor(loggingInterceptor)
             .sslSocketFactory(sslSocketFactory, trustManager)
             .hostnameVerifier { _, _ -> true }
@@ -117,19 +121,19 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideAuthenticationAPI(retrofitBuilder: Retrofit.Builder, @WithoutInterceptor okHttpClient: OkHttpClient): AuthenticationAPI {
+    fun provideAuthenticationAPI(retrofitBuilder: Retrofit.Builder, @WithoutAuthInterceptor okHttpClient: OkHttpClient): AuthenticationAPI {
         return retrofitBuilder.client(okHttpClient).build().create(AuthenticationAPI::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideMessageAPI(retrofitBuilder: Retrofit.Builder, @WithInterceptor okHttpClient: OkHttpClient): MessageAPI {
+    fun provideMessageAPI(retrofitBuilder: Retrofit.Builder, @WithAuthInterceptor okHttpClient: OkHttpClient): MessageAPI {
         return retrofitBuilder.client(okHttpClient).build().create(MessageAPI::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideAssistantAPI(retrofitBuilder: Retrofit.Builder, @WithInterceptor okHttpClient: OkHttpClient): AssistantAPI {
+    fun provideAssistantAPI(retrofitBuilder: Retrofit.Builder, @WithAuthInterceptor okHttpClient: OkHttpClient): AssistantAPI {
         val customTimeoutClient = okHttpClient.newBuilder()
             .readTimeout(1, TimeUnit.MINUTES)
             .connectTimeout(1, TimeUnit.MINUTES)
