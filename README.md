@@ -46,7 +46,7 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 11. It will/may get stuck while downloading RVC Assets. (~6th cell under 'SETUP')
 12. When the last log under this cell states: "all download taks finished", just 'Cancel' and 'Run All' again (~5min).
 13. Under 'EXECUTE' section you should see server logs like: "Started server process", after the start-up.
-14. You can verify if the server has started correctly by opening the base backend URL from Step-3 in the browser.
+14. You can verify if the server has started by opening the base backend URL from Step-3 in the browser.
 15. If all is done correctly, you should see something like {"detail":"Not found"}
 16. Use the notebook in this interactive mode only. If you 'Save and commit', the file persistence (conversation data) is lost.
 
