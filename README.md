@@ -56,7 +56,7 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 2. Goto <a href="https://github.com/BinitDOX/ARA/releases">releases</a> and download the latest version of the app.
 3. Install and grant the necessary permissions, specially the accessibility permission.
 4. Tap the 3-dot Menu, goto Settings.
-5. Set the Base URL (Step-3), with the 'https://' prefix and '/' suffix. (Ex: https://stallion-uncommon-exact.ngrok-free.app/)
+5. Set the Base URL (Step-3), with the 'https://' prefix and '/' suffix.<br/>(Ex: https://stallion-uncommon-exact.ngrok-free.app/)
 6. If you built the app yourself, you can just set this as BASE_URL in the dev.properties file.
 7. Check out and set the rest of the settings as you please and save.
 8. Then tap the Add Assistant Button, on the bottom right.
