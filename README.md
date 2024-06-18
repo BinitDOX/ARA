@@ -5,7 +5,7 @@ ARA is a Personalized AI Assistant for Active Recall and Automation. It empowers
 - Active Recall Focus: ARA prioritizes prompting you with information to strengthen memory and recall, supporting a more knowledge-centric approach to AI interaction.
 
 ## Demo Video:
-[![DEMO VIDEO]([https://drive.google.com/file/d/1wZXzIZBqKtZxP_HyicIgYW8gIsL14z3g/view](https://github.com/BinitDOX/ARA/assets/93908298/3b527969-048b-4bed-88c8-18737af8b7ff))](https://youtu.be/lnF41vxvm4w)
+[![DEMO VIDEO](https://github.com/BinitDOX/ARA/assets/93908298/9eafd045-4846-4308-9739-09ec384f960d)](https://youtu.be/lnF41vxvm4w)
 
 ## Notes:
 This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-YFU</a>.
