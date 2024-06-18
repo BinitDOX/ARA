@@ -4,10 +4,8 @@ ARA is a Personalized AI Assistant for Active Recall and Automation. It empowers
 - Tailored Assistance: Create and personalize multiple AI assistants, each with distinct voices and functionalities. This allows you to configure them for specific tasks or preferences.
 - Active Recall Focus: ARA prioritizes prompting you with information to strengthen memory and recall, supporting a more knowledge-centric approach to AI interaction.
 
-
 ## Demo Video:
-
-
+[![DEMO VIDEO]([https://drive.google.com/file/d/1wZXzIZBqKtZxP_HyicIgYW8gIsL14z3g/view](https://github.com/BinitDOX/ARA/assets/93908298/3b527969-048b-4bed-88c8-18737af8b7ff))](https://youtu.be/lnF41vxvm4w)
 
 ## Notes:
 This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-YFU</a>.
@@ -51,7 +49,7 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 16. Use the notebook in this interactive mode only. If you 'Save and commit', the file persistence (conversation data) is lost.
 
 ## Application Setup Instructions:
-0. Watch and follow the demo.
+0. Watch and follow the <a href="https://youtu.be/lnF41vxvm4w">demo</a>.
 1. You can either clone the repository and build the app yourself using android studio, OR
 2. Goto <a href="https://github.com/BinitDOX/ARA/releases">releases</a> and download the latest version of the app.
 3. Install and grant the necessary permissions, specially the accessibility permission.
