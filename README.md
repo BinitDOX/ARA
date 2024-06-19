@@ -77,10 +77,10 @@ This is a successor project to <a href="https://github.com/BinitDOX/AI-YFU">AI-Y
 
 ## Extra Notes:
 - In a chat, the button on left of camera can be used to test commands. Choose any command, edit the arguments and send it.
-- Basically, anything after the <TEST> token is completely ignored by the assistant.
+- Basically, anything after the &lt;TEST&gt; token is completely ignored by the assistant.
 - Long press a message to see some useful options, like copy, reply, delete, etc. (Specially delete, to clean up a bad response)
-- Append the <BREAK> token at the end of your message to NOT get a response from the assistant. Useful when you want to send multiple messages.
-- The assistant may use the <BREAK> token too. (Limited by the system to ~2 at once)
+- Append the &lt;BREAK&gt; token at the end of your message to NOT get a response from the assistant. Useful when you want to send multiple messages.
+- The assistant may use the &lt;BREAK&gt; token too. (Limited by the system to ~2 at once)
 - A default assistant needs to be set to handle device events like incoming call, alarms etc.
 - Deleting a chat also deletes the assistant.
 - Enable google assistant override in settings, it's just too good!
