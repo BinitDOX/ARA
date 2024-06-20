@@ -104,3 +104,4 @@ Therefore, none of the critical private info is shared from the app, with the as
 <i>I don't remember..., I'll add as I remember...</i>
 - <a href="https://github.com/SmartToolFactory/Flexible-Chat-Box">Flexible Chat Box</a>
 - <a href="https://huggingface.co/TheBloke/dolphin-2.1-mistral-7B-GPTQ">LLM Model</a>
+- <a href="https://github.com/skydoves/colorpicker-compose">Color Picker</a>
