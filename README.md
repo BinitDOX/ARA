@@ -105,3 +105,4 @@ Therefore, none of the critical private info is shared from the app, with the as
 - <a href="https://github.com/SmartToolFactory/Flexible-Chat-Box">Flexible Chat Box</a>
 - <a href="https://huggingface.co/TheBloke/dolphin-2.1-mistral-7B-GPTQ">LLM Model</a>
 - <a href="https://github.com/skydoves/colorpicker-compose">Color Picker</a>
+- <a href="https://medium.com/make-apps-simple/swipe-button-using-jetpack-compose-bd50a824d8cc">Swipe Button</a>
