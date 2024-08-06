@@ -14,7 +14,8 @@ class CommandHandlerFactory @Inject constructor(
     private val callCommandHandler: CallCommandHandlerFactory,
     private val alarmCommandHandler: AlarmCommandHandlerFactory,
     private val playMusicCommandHandler: PlayMusicCommandHandlerFactory,
-    private val musicControlCommandHandler: MusicControlCommandHandlerFactory
+    private val musicControlCommandHandler: MusicControlCommandHandlerFactory,
+    private val bookCabCommandHandler: BookCabCommandHandlerFactory
 ) {
     private val BRACKET_PATTERN: Pattern = Pattern.compile("\\[(.*?)]")
     private val COMMAND_PATTERN: Pattern = Pattern.compile("(\\w+)\\((.*?)\\)")
@@ -30,7 +31,8 @@ class CommandHandlerFactory @Inject constructor(
         ALARM,
         CALL,
         PLAY_MUSIC,
-        MUSIC_CONTROL
+        MUSIC_CONTROL,
+        BOOK_CAB
     }
 
 
@@ -67,6 +69,7 @@ class CommandHandlerFactory @Inject constructor(
                             CommandType.ALARM.name -> commandHandlers.add(alarmCommandHandler.create(args))
                             CommandType.PLAY_MUSIC.name -> commandHandlers.add(playMusicCommandHandler.create(args))
                             CommandType.MUSIC_CONTROL.name -> commandHandlers.add(musicControlCommandHandler.create(args))
+                            CommandType.BOOK_CAB.name -> commandHandlers.add(bookCabCommandHandler.create(args))
                             else -> {
                                 Timber.e("[${::getCommandHandlers.name}] Unknown command type: $commandType")
                                 throw IllegalArgumentException("Command not found: '$commandType'")
@@ -97,6 +100,7 @@ class CommandHandlerFactory @Inject constructor(
         commandHelps.add(alarmCommandHandler.create(emptyList()).getUsage())
         commandHelps.add(playMusicCommandHandler.create(emptyList()).getUsage())
         commandHelps.add(musicControlCommandHandler.create(emptyList()).getUsage())
+        commandHelps.add(bookCabCommandHandler.create(emptyList()).getUsage())
         return commandHelps
     }
 }

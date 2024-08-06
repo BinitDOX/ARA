@@ -94,6 +94,7 @@
 
     <queries>
         <package android:name="net.one97.paytm" />
+        <package android:name="com.ubercab" />
     </queries>
 
 </manifest>

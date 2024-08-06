@@ -141,7 +141,8 @@ fun ChatScreen(
                         var selectedMessage by remember { mutableStateOf<Message?>(null) }
                         var showEditDialog by remember { mutableStateOf(false) }
 
-                        if (message != null && !(chat?.showFailedMessages == true && message.status == MessageStatus.FAILED)) {
+                        if (message != null &&
+                            !(chat?.showFailedMessages == false && message.status == MessageStatus.FAILED)) {
                             // TODO: Add scroll to on quoted message (findIndexById or map)
 
                             if(chat?.showTokens == false){

@@ -1,6 +1,7 @@
 package com.dox.ara.command
 
 import com.dox.ara.command.types.AlarmCommandHandler
+import com.dox.ara.command.types.BookCabCommandHandler
 import com.dox.ara.command.types.CallCommandHandler
 import com.dox.ara.command.types.IncomingCallCommandHandler
 import com.dox.ara.command.types.MusicControlCommandHandler
@@ -54,4 +55,9 @@ interface PlayMusicCommandHandlerFactory {
 @AssistedFactory
 interface MusicControlCommandHandlerFactory {
     fun create(args: List<String>): MusicControlCommandHandler
+}
+
+@AssistedFactory
+interface BookCabCommandHandlerFactory {
+    fun create(args: List<String>): BookCabCommandHandler
 }

@@ -62,6 +62,7 @@ object Constants {
     const val BLUETOOTH_PACKAGE_NAME = "com.oplus.wirelesssettings"
     const val PAYTM_PACKAGE_NAME = "net.one97.paytm"
     const val GOOGLE_ASSISTANT_PACKAGE_NAME = "com.google.android.googlequicksearchbox"
+    const val UBER_PACKAGE_NAME = "com.ubercab"
 
     // Directory Constants
     const val AUDIO_DIR = "${APP_ID}_audio"
