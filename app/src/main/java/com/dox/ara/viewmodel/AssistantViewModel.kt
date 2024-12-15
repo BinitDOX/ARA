@@ -58,7 +58,7 @@ class AssistantViewModel @Inject constructor(
             "Example: [setting(wifi,on)->setting(mobile_data,off)->volume(30)]\n\n\n" +
             //"12. Always stay in character, never break your character.\n" +
             //"13. Do not copy the user or the system, your role is assistant.\n\n\n"
-            "#### Conversation: \n"
+            "#### Conversation: \n\n"
 
     private val _name = MutableStateFlow("")
     val name = _name.asStateFlow()
@@ -150,6 +150,7 @@ class AssistantViewModel @Inject constructor(
                         setImageUri(assist.imageUri)
                         setColor(assist.color)
                         setEdgeVoiceModel(assist.edgeVoice)
+                        setEdgeVoicePitch(assist.edgePitch.toString())
                         setRvcVoiceModel(assist.rvcVoice)
                     }
                 }

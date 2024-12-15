@@ -112,7 +112,20 @@ class AssistantRepository @Inject constructor(
     }
 
     suspend fun upgradeAssistant(assistantRequest: AssistantRequest): Boolean {
-        return true
+        return try {
+            val response = assistantAPI.update(assistantRequest)
+            return if (response.isSuccessful && response.body()?.isSuccess == true) {
+                Timber.d("[${::upgradeAssistant.name}] Response: " + response.body()?.payload)
+                true
+            } else {
+                Timber.e("[${::upgradeAssistant.name}] Response: " +
+                        if (!response.isSuccessful) response.errorBody().toString() else response.body())
+                false
+            }
+        } catch (e: Exception) {
+            Timber.e("[${::upgradeAssistant.name}] [${Constants.Entity.MESSAGE}] Error: $e")
+            false
+        }
     }
 
     suspend fun parseAndExecuteCommands(content: String, chatId: Long): List<CommandResponse> {

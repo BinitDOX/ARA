@@ -221,7 +221,8 @@ fun AssistantScreen(
                     isComplete = isSaved
                 ) {
                     assistantViewModel.viewModelScope.launch {
-                        assistantViewModel.createAssistant()
+                        if(assistant == null) assistantViewModel.createAssistant()
+                        else assistantViewModel.updateAssistant()
                         delay(500)
                         assistantViewModel.setIsSaved(true)
                         delay(1000)

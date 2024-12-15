@@ -43,7 +43,8 @@ class PermissionManager @Inject constructor(@ApplicationContext private val cont
                 Manifest.permission.READ_CALL_LOG,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.ANSWER_PHONE_CALLS,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CALL_PHONE,
             )
         )
 

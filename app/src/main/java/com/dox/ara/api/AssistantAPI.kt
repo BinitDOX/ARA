@@ -12,11 +12,15 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface AssistantAPI {
     @POST("/$APP_ID/assistant/create")
     suspend fun create(@Body assistantRequest: AssistantRequest) : Response<ServerResponse<String>>
+
+    @PUT("/$APP_ID/assistant/update")
+    suspend fun update(@Body assistantRequest: AssistantRequest) : Response<ServerResponse<String>>
 
     @GET("/$APP_ID/assistant/voice-models")
     suspend fun voiceModels() : Response<ServerResponse<VoiceModelsResponse>>
