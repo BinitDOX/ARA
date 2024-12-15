@@ -32,6 +32,13 @@ android {
         }
     }
 
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas/$mode")
+    }
+
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas/$mode")
+    }
 
     namespace = "com.dox.ara"
     compileSdk = 34
@@ -147,6 +154,8 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-paging:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
+    testImplementation("androidx.room:room-testing:$roomVersion")
+    androidTestImplementation("androidx.room:room-testing:$roomVersion")
 
     val pagingVersion = "3.3.0"
     implementation("androidx.paging:paging-runtime-ktx:${pagingVersion}")

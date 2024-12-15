@@ -39,12 +39,12 @@ abstract class CommandHandler(
 
     protected abstract fun help(): String
 
-    protected abstract suspend fun execute(): CommandResponse
+    protected abstract suspend fun execute(chatId: Long): CommandResponse
 
 
     // Public final methods that can be called from the factory returned object
     // But the implementation of these methods cannot be overridden
-    suspend fun validateAndExecute(): CommandResponse {
+    suspend fun validateAndExecute(chatId: Long): CommandResponse {
         try {
             checkArguments()
             parseArguments()
@@ -56,7 +56,7 @@ abstract class CommandHandler(
             return makeResponseFromUnexpectedException(ex)
         }
 
-        return execute()
+        return execute(chatId)
     }
 
     fun getUsage(): String {

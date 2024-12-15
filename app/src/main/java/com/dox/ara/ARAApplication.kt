@@ -16,6 +16,8 @@ class ARAApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var hiltWorkerFactory: HiltWorkerFactory
 
+    private lateinit var fileLoggingTree: FileLoggingTree
+
     override fun onCreate() {
         super.onCreate()
 
@@ -23,7 +25,8 @@ class ARAApplication : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
         }
 
-        Timber.plant(FileLoggingTree(this, true))
+        fileLoggingTree = FileLoggingTree(this)
+        Timber.plant(fileLoggingTree)
 
         AppLifecycleListener.init(this)
     }
@@ -32,4 +35,9 @@ class ARAApplication : Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setWorkerFactory(hiltWorkerFactory)
             .build()
+
+    override fun onTerminate() {
+        super.onTerminate()
+        fileLoggingTree.closeLogWriter()
+    }
 }

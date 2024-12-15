@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dox.ara.R
 import com.dox.ara.model.Alarm
+import com.dox.ara.model.Assistant
 import com.dox.ara.ui.theme.ARATheme
 import com.dox.ara.viewmodel.AlarmsViewModel
 import java.text.SimpleDateFormat
@@ -56,10 +59,12 @@ fun AlarmsPage(
     alarmsViewModel: AlarmsViewModel = hiltViewModel()
 ) {
     val alarmItems by alarmsViewModel.alarmItems.collectAsStateWithLifecycle()
+    val assistant by alarmsViewModel.assistant.collectAsStateWithLifecycle()
     var selectedAlarm by remember { mutableStateOf<Alarm?>(null) }
 
     if (showAlarmDialog.value || selectedAlarm != null) {
         AlarmDialog(
+            assistant = assistant,
             alarm = selectedAlarm,
             onDismiss = {
                 showAlarmDialog.value = false
@@ -88,7 +93,10 @@ fun AlarmsPage(
         items(alarmItems, key = { it.id }) { alarm ->
             AlarmRow(
                 alarm = alarm,
-                onClick = { selectedAlarm = it },
+                onClick = {
+                    selectedAlarm = it
+                    alarmsViewModel.updateAssistant(it)
+                },
                 onDelete = { alarmsViewModel.deleteAlarm(it) },
                 onToggle = { alarmsViewModel.toggleAlarm(it) }
             )
@@ -160,12 +168,14 @@ fun AlarmRow(
 
 @Composable
 fun AlarmDialog(
+    assistant: Assistant?,
     alarm: Alarm?,
     onDismiss: () -> Unit,
     onSave: (Alarm) -> Unit
 ) {
     var date by remember { mutableStateOf(alarm?.time?.let { Date(it) } ?: Date()) }
     var description by remember { mutableStateOf(alarm?.description ?: "") }
+    var volume by remember { mutableIntStateOf(alarm?.volume ?: 50) }
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val timeFormatter = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -202,7 +212,14 @@ fun AlarmDialog(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text("Set Alarm", style = MaterialTheme.typography.titleLarge)
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Set Alarm", style = MaterialTheme.typography.titleLarge)
+                    Text("Set by: ${assistant?.name ?: "User"}", style = MaterialTheme.typography.bodySmall)
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -241,6 +258,23 @@ fun AlarmDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Volume Slider
+                Slider(
+                    value = volume.toFloat(),
+                    onValueChange = { volume = it.toInt() },
+                    valueRange = 0f..100f,
+                    steps = 9,
+                    modifier = Modifier.fillMaxWidth(),
+                    onValueChangeFinished = {}
+                )
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = "Volume: $volume",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
@@ -262,6 +296,8 @@ fun AlarmDialog(
                                 id = alarm?.id ?: 0,
                                 time = date.time,
                                 description = description,
+                                volume = volume,
+                                chatId = null,
                                 isActive = alarm?.isActive ?: true
                             )
                         )
@@ -280,6 +316,7 @@ fun AlarmDialog(
 private fun AlarmDialogPreview() {
     ARATheme {
         AlarmDialog(
+            assistant = null,
             alarm = null,
             onDismiss = {},
             onSave = {}
@@ -296,7 +333,9 @@ private fun AlarmRowPreview() {
                 id = 1,
                 description = "Alarm 1",
                 time = System.currentTimeMillis(),
-                isActive = true
+                isActive = true,
+                volume = 60,
+                chatId = null
             ),
             onClick = {},
             onToggle = {},

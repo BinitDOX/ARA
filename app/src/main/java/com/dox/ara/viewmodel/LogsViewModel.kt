@@ -40,6 +40,13 @@ class LogsViewModel @Inject constructor(
         fetchLogsForDate(date)
     }
 
+    fun refresh(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val logLines = readLogs(_selectedDate.value).toList()
+            _logs.value = logLines
+        }
+    }
+
     private fun fetchLogsForDate(date: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val logLines = readLogs(date).toList()

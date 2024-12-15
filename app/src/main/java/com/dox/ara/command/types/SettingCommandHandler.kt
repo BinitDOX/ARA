@@ -16,6 +16,7 @@ import com.dox.ara.command.CommandResponse
 import com.dox.ara.manager.PermissionManager
 import com.dox.ara.service.EventListenerService.Companion.startRoutine
 import com.dox.ara.service.event.SettingCommandEvent.Companion.BLUETOOTH_SUB_ROUTINE
+import com.dox.ara.service.event.SettingCommandEvent.Companion.GPS_SUB_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.MOBILE_DATA_SUB_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.QUICK_SETTINGS_ROUTINE
 import com.dox.ara.service.event.SettingCommandEvent.Companion.WIFI_SUB_ROUTINE
@@ -41,7 +42,8 @@ class SettingCommandHandler @AssistedInject constructor(
         WIFI,
         BLUETOOTH,
         MOBILE_DATA,
-        TORCH
+        TORCH,
+        GPS
     }
 
     enum class SettingValue {
@@ -57,7 +59,9 @@ class SettingCommandHandler @AssistedInject constructor(
 
     override fun parseArguments() {
         val settingType = args[0].replace(" ", "_").uppercase().replace("'", "")
+            .replace("\"", "")
         val settingValue = args[1].uppercase().replace("'", "")
+            .replace("\"", "")
 
         try {
             this.settingType = SettingType.valueOf(settingType)
@@ -226,12 +230,39 @@ class SettingCommandHandler @AssistedInject constructor(
         return response
     }
 
-    override suspend fun execute(): CommandResponse {
+    private suspend fun handleGpsSetting(state: Boolean): CommandResponse {
+        if(AppTools.isGpsEnabled(context) == state){
+            return CommandResponse(
+                isSuccess = true,
+                message = "GPS is already ${if (state) "on" else "off"}",
+                getResponse = true
+            )
+        }
+
+        if(!permissionManager.isAccessibilityPermissionGranted(context)) {
+            return CommandResponse(
+                isSuccess = false,
+                message = "Accessibility permission is not granted",
+                getResponse = true
+            )
+        }
+
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        GPS_SUB_ROUTINE.active = true
+        val response = startRoutine(context, QUICK_SETTINGS_ROUTINE, intent)
+        cancelAllSubRoutines()
+        return response
+    }
+
+    override suspend fun execute(chatId: Long): CommandResponse {
        return when(settingType){
            SettingType.WIFI -> handleWifiSetting(settingValue == SettingValue.ON)
            SettingType.BLUETOOTH -> handleBluetoothSetting(settingValue == SettingValue.ON)
            SettingType.MOBILE_DATA -> handleMobileDataSetting(settingValue == SettingValue.ON)
            SettingType.TORCH -> handleTorchSetting(settingValue == SettingValue.ON)
+           SettingType.GPS -> handleGpsSetting(settingValue == SettingValue.ON)
        }
     }
 }

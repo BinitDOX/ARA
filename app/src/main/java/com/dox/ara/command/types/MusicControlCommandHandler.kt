@@ -42,7 +42,7 @@ class MusicControlCommandHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
         return try {
             withContext(Dispatchers.Main) {
                 if (mediaControllerManager.isMusicStopped()) {

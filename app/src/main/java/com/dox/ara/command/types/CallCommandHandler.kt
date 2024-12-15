@@ -26,14 +26,14 @@ class CallCommandHandler @AssistedInject constructor(
     }
 
     override fun parseArguments() {
-        val contactName = args[0].replace("'","")
+        val contactName = args[0].replace("'","").replace("\"", "")
         this.contactName = contactName
 
         phoneNumber = getPhoneNumberFromContactName(context, contactName)
             ?: throw IllegalArgumentException("Contact $contactName not found.")
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
         return try {
             val intent = Intent(Intent.ACTION_CALL);
             intent.data = Uri.parse("tel:$phoneNumber")

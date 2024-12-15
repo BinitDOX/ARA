@@ -66,6 +66,7 @@ import com.dox.ara.ui.component.chat.chatbubble.ReceivedMessageRow
 import com.dox.ara.ui.component.chat.chatbubble.SentMessageRow
 import com.dox.ara.ui.data.MessageStatus
 import com.dox.ara.ui.data.Role
+import com.dox.ara.ui.data.RouteItem
 import com.dox.ara.ui.theme.ARATheme
 import com.dox.ara.utility.Constants.TEST
 import com.dox.ara.viewmodel.ChatViewModel
@@ -101,7 +102,8 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            TopBarChat(navController, chatViewModel)
+            TopBarChat(navController, chatViewModel
+            ) { navController.navigate("${RouteItem.Assistant.route}/${assistant!!.id}") }
         }
     ) { innerPadding ->
         Surface(

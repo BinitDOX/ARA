@@ -15,6 +15,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.dox.ara.listener.SpeechToTextListener
 import com.dox.ara.manager.MediaControllerManager
+import com.dox.ara.manager.NotificationChannelManager
 import com.dox.ara.manager.PermissionManager
 import com.dox.ara.manager.SharedPreferencesManager
 import com.dox.ara.model.Assistant
@@ -58,7 +59,8 @@ class ChatViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
     private val speechToTextListener: SpeechToTextListener,
     private val permissionManager: PermissionManager,
-    private val sharedPreferencesManager: SharedPreferencesManager
+    private val sharedPreferencesManager: SharedPreferencesManager,
+    private val notificationChannelManager: NotificationChannelManager
 ): ViewModel() {
     private val chatId = state.get<Long>(RouteItem.Chat.arguments.first().name) ?: -1
 
@@ -91,6 +93,7 @@ class ChatViewModel @Inject constructor(
         getAssistant()
         getChat()
         markAsRead()
+        cancelNotifications()
     }
 
     private fun getAssistant(){
@@ -204,6 +207,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun cancelNotifications(){
+        notificationChannelManager.cancelNotification(chatId.toInt())
+    }
+
     suspend fun sendMessage(messageContent: String, quotedMessageId: Long?) {
         val message = Message(
             id = 0,
@@ -254,7 +261,10 @@ class ChatViewModel @Inject constructor(
         )
 
         messageRepository.saveMessage(message)
-        val commandResponses = assistantRepository.parseAndExecuteCommands(messageContent)
+        val commandResponses = assistantRepository.parseAndExecuteCommands(
+            messageContent,
+            chatId
+        )
         for (commandResponse in commandResponses) {
             assistantRepository.buildAndSaveSystemMessage(
                 commandResponse.message,  chatId, false, quotedMessageId, true)

@@ -66,6 +66,10 @@ class AssistantRepository @Inject constructor(
         return assistantDao.insert(assistant)
     }
 
+    suspend fun updateAssistant(assistant: Assistant) {
+        assistantDao.update(assistant)
+    }
+
     suspend fun getAvailableAssistantVoiceModels(): VoiceModelsResponse {
         var payload = VoiceModelsResponse(
             edgeVoiceModels = emptyList(),
@@ -107,7 +111,11 @@ class AssistantRepository @Inject constructor(
         }
     }
 
-    suspend fun parseAndExecuteCommands(content: String): List<CommandResponse> {
+    suspend fun upgradeAssistant(assistantRequest: AssistantRequest): Boolean {
+        return true
+    }
+
+    suspend fun parseAndExecuteCommands(content: String, chatId: Long): List<CommandResponse> {
         val commandResponses = mutableListOf<CommandResponse>()
 
         val commands = try {
@@ -117,7 +125,7 @@ class AssistantRepository @Inject constructor(
         }
 
         for (command in commands) {
-            val commandResponse = command.validateAndExecute()
+            val commandResponse = command.validateAndExecute(chatId)
             if(!commandResponse.isSuccess && commandResponse.getResponse) {
                 commandResponses.add(commandResponse.copy(
                     message = commandResponse.message + "\nInform and ask the user before trying to execute the command again"
@@ -237,7 +245,7 @@ class AssistantRepository @Inject constructor(
                     } else {
                         val commandResponse = CommandResponse(
                             isSuccess = false,
-                            message = "Usage of $BREAK token exceeded the max limit of $MAX_BREAKS." +
+                            message = "Consecutive usage of $BREAK token exceeded the max limit of $MAX_BREAKS." +
                                     " Stop using it.",
                             getResponse = false
                         )
@@ -247,7 +255,7 @@ class AssistantRepository @Inject constructor(
                     breakCount = 0
                 }
 
-                val commandResponses = parseAndExecuteCommands(content)
+                val commandResponses = parseAndExecuteCommands(content, chatId)
                 saveAndUploadSystemMessages(commandResponses, chatId, quotedMessageId = messageId)
 
             } else {

@@ -41,7 +41,9 @@ class PayQrCommandHandler @AssistedInject constructor(
 
     override fun parseArguments() {
         val applicationName = args[0].replace(" ", "_").uppercase().replace("'", "")
+            .replace("\"", "")
         val amount = args[1].replace("'", "")
+            .replace("\"", "")
 
         try {
             this.applicationName = PaymentApplication.valueOf(applicationName)
@@ -109,7 +111,7 @@ class PayQrCommandHandler @AssistedInject constructor(
         )
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
        return when(applicationName){
            PaymentApplication.PAYTM -> handlePaytm()
            PaymentApplication.PHONE_PAY -> handlePhonePay()

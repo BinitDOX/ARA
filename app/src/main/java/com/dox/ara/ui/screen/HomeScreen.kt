@@ -47,7 +47,7 @@ fun HomeScreen(navController: NavController, pageController: PagerState) {
         floatingActionButton = {
             when(pageController.currentPage) {
                 0 -> FloatingActionButton(Icons.Filled.PersonAddAlt) {
-                    navController.navigate(RouteItem.AddAssistant.route)
+                    navController.navigate("${RouteItem.Assistant.route}/-1")
                 }
                 1 -> {}
                 2 -> FloatingActionButton(Icons.Filled.AddAlarm) {

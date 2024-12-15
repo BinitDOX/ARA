@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.dox.ara.command.CommandHandlerFactory.CommandType.SETTING
 import com.dox.ara.command.types.SettingCommandHandler.SettingType.BLUETOOTH
+import com.dox.ara.command.types.SettingCommandHandler.SettingType.GPS
 import com.dox.ara.command.types.SettingCommandHandler.SettingType.MOBILE_DATA
 import com.dox.ara.command.types.SettingCommandHandler.SettingType.WIFI
 import com.dox.ara.service.EventListenerService.Companion.Routine
@@ -24,11 +25,13 @@ class SettingCommandEvent @Inject constructor() {
         var WIFI_SUB_ROUTINE = Routine(WIFI.name, false, false)
         var MOBILE_DATA_SUB_ROUTINE = Routine(MOBILE_DATA.name, false, false)
         var BLUETOOTH_SUB_ROUTINE = Routine(BLUETOOTH.name, false, false)
+        var GPS_SUB_ROUTINE = Routine(GPS.name, false, false)
 
         fun cancelAllSubRoutines() {
             WIFI_SUB_ROUTINE.active = false
             MOBILE_DATA_SUB_ROUTINE.active = false
             BLUETOOTH_SUB_ROUTINE.active = false
+            GPS_SUB_ROUTINE.active = false
         }
     }
 
@@ -80,6 +83,17 @@ class SettingCommandEvent @Inject constructor() {
                             QUICK_SETTINGS_ROUTINE.active = false
                             BLUETOOTH_SUB_ROUTINE.active = false
                         }
+                }
+
+                if(GPS_SUB_ROUTINE.active) {
+                    val locationSwitch = parentNodeInfo.findAccessibilityNodeInfosByViewId("android:id/title")
+                    if(locationSwitch.isNotEmpty()) {
+                        locationSwitch[0].parent.parent.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                        Timber.d("[${::handleQuickSettingsEvent.name}] Toggled Location")
+                        performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                        QUICK_SETTINGS_ROUTINE.active = false
+                        GPS_SUB_ROUTINE.active = false
+                    }
                 }
 
             } catch (e: Exception) {

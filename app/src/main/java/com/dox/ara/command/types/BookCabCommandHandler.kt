@@ -36,7 +36,8 @@ class BookCabCommandHandler @AssistedInject constructor(
     }
 
     override fun parseArguments() {
-        val applicationName = args[0].replace(" ", "_").uppercase().replace("'", "")
+        val applicationName = args[0].replace(" ", "_").uppercase()
+            .replace("'", "").replace("\"", "")
         val location = args[1] + "," + args[2] + "," + args[3]
 
         this.location = location
@@ -89,7 +90,7 @@ class BookCabCommandHandler @AssistedInject constructor(
         )
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
        return when(applicationName){
            CabApplication.UBER -> handleUber()
            CabApplication.OLA -> handleOla()

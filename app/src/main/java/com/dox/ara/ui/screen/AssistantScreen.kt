@@ -54,34 +54,39 @@ import com.dox.ara.ui.component.ProfilePicture
 import com.dox.ara.ui.component.SwipeButton
 import com.dox.ara.ui.component.TopBar
 import com.dox.ara.ui.theme.ARATheme
-import com.dox.ara.viewmodel.AddAssistantViewModel
+import com.dox.ara.viewmodel.AssistantViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun AddAssistantScreen(
+fun AssistantScreen(
     navController: NavController,
-    addAssistantViewModel: AddAssistantViewModel = hiltViewModel()
+    assistantViewModel: AssistantViewModel = hiltViewModel()
 ) {
-    val name by addAssistantViewModel.name.collectAsStateWithLifecycle()
-    val about by addAssistantViewModel.about.collectAsStateWithLifecycle()
-    val color by addAssistantViewModel.color.collectAsStateWithLifecycle()
-    val prompt by addAssistantViewModel.prompt.collectAsStateWithLifecycle()
-    val imageUri by addAssistantViewModel.imageUri.collectAsStateWithLifecycle()
-    val edgeVoice by addAssistantViewModel.edgeVoiceModel.collectAsStateWithLifecycle()
-    val edgePitch by addAssistantViewModel.edgeVoicePitch.collectAsStateWithLifecycle()
-    val rvcVoice by addAssistantViewModel.rvcVoiceModel.collectAsStateWithLifecycle()
+    val assistant by assistantViewModel.assistant.collectAsStateWithLifecycle()
 
-    val availableEdgeVoiceModels by addAssistantViewModel.availableEdgeVoiceModels.collectAsStateWithLifecycle()
-    val availableRvcVoiceModels by addAssistantViewModel.availableRvcVoiceModels.collectAsStateWithLifecycle()
+    val name by assistantViewModel.name.collectAsStateWithLifecycle()
+    val about by assistantViewModel.about.collectAsStateWithLifecycle()
+    val color by assistantViewModel.color.collectAsStateWithLifecycle()
+    val prompt by assistantViewModel.prompt.collectAsStateWithLifecycle()
+    val imageUri by assistantViewModel.imageUri.collectAsStateWithLifecycle()
+    val edgeVoice by assistantViewModel.edgeVoiceModel.collectAsStateWithLifecycle()
+    val edgePitch by assistantViewModel.edgeVoicePitch.collectAsStateWithLifecycle()
+    val rvcVoice by assistantViewModel.rvcVoiceModel.collectAsStateWithLifecycle()
 
-    val isSaved by addAssistantViewModel.isSaved.collectAsStateWithLifecycle()
+    val availableEdgeVoiceModels by assistantViewModel.availableEdgeVoiceModels.collectAsStateWithLifecycle()
+    val availableRvcVoiceModels by assistantViewModel.availableRvcVoiceModels.collectAsStateWithLifecycle()
+
+    val isSaved by assistantViewModel.isSaved.collectAsStateWithLifecycle()
 
     var showColorPickerDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TopBar(navController, R.string.screen_add_assistant, true)
+            TopBar(navController,
+                if(assistant == null) R.string.screen_add_assistant
+                else R.string.screen_update_assistant,
+                true)
         }
     ) { innerPadding ->
 
@@ -101,14 +106,14 @@ fun AddAssistantScreen(
                 AddProfilePicture(
                     size = 128.dp,
                     imageUri = imageUri,
-                    setImageUri = addAssistantViewModel::setImageUri
+                    setImageUri = assistantViewModel::setImageUri
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 TextField(
                     value = name,
-                    onValueChange = { addAssistantViewModel.setName(it) },
+                    onValueChange = { assistantViewModel.setName(it) },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -118,7 +123,7 @@ fun AddAssistantScreen(
 
                 TextField(
                     value = about,
-                    onValueChange = { addAssistantViewModel.setAbout(it) },
+                    onValueChange = { assistantViewModel.setAbout(it) },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_about)) },
                     maxLines = 3,
                     modifier = Modifier.fillMaxWidth()
@@ -135,8 +140,13 @@ fun AddAssistantScreen(
                             .height(50.dp)
                             .width(86.dp)
                             .border(width = 2.dp, color = MaterialTheme.colorScheme.outline)
-                            .background(try{Color(color.toColorInt())}
-                                        catch (e: Exception) { Color.Unspecified })
+                            .background(
+                                try {
+                                    Color(color.toColorInt())
+                                } catch (e: Exception) {
+                                    Color.Unspecified
+                                }
+                            )
                             .clickable { showColorPickerDialog = true }
                     )
 
@@ -144,7 +154,7 @@ fun AddAssistantScreen(
 
                     TextField(
                         value = color,
-                        onValueChange = { addAssistantViewModel.setColor(it) },
+                        onValueChange = { assistantViewModel.setColor(it) },
                         label = { Text(stringResource(id = R.string.placeholder_assistant_color)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -155,7 +165,7 @@ fun AddAssistantScreen(
                     ColorPickerDialog(
                         onDismiss = { showColorPickerDialog = false },
                         onColorSelected = { color ->
-                            addAssistantViewModel.setColor(color.toHexCodeWithAlpha())
+                            assistantViewModel.setColor(color.toHexCodeWithAlpha())
                         },
                         selectedColor = try{Color(color.toColorInt())} catch (e: Exception) { Color.Unspecified }
                     )
@@ -167,7 +177,7 @@ fun AddAssistantScreen(
                     label = stringResource(id = R.string.placeholder_assistant_edge_voice),
                     options = availableEdgeVoiceModels,
                     selectedOption = edgeVoice,
-                    onOptionSelected = { addAssistantViewModel.setEdgeVoiceModel(it) },
+                    onOptionSelected = { assistantViewModel.setEdgeVoiceModel(it) },
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -175,7 +185,7 @@ fun AddAssistantScreen(
                 TextField(
                     value = edgePitch,
                     onValueChange = {
-                        if (it.isDigitsOnly()) addAssistantViewModel.setEdgeVoicePitch(it)
+                        if (it.isDigitsOnly()) assistantViewModel.setEdgeVoicePitch(it)
                     },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_edge_pitch)) },
                     singleLine = true,
@@ -188,14 +198,14 @@ fun AddAssistantScreen(
                     label = stringResource(id = R.string.placeholder_assistant_rvc_voice),
                     options = availableRvcVoiceModels,
                     selectedOption = rvcVoice,
-                    onOptionSelected = { addAssistantViewModel.setRvcVoiceModel(it) },
+                    onOptionSelected = { assistantViewModel.setRvcVoiceModel(it) },
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TextField(
                     value = prompt,
-                    onValueChange = { addAssistantViewModel.setPrompt(it) },
+                    onValueChange = { assistantViewModel.setPrompt(it) },
                     label = { Text(stringResource(id = R.string.placeholder_assistant_prompt)) },
                     maxLines = 25,
                     minLines = 15,
@@ -206,13 +216,14 @@ fun AddAssistantScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SwipeButton(
-                    text = stringResource(id = R.string.btn_add_assistant),
+                    text = stringResource(id = if(assistant == null) R.string.btn_add_assistant
+                        else R.string.btn_update_assistant),
                     isComplete = isSaved
                 ) {
-                    addAssistantViewModel.viewModelScope.launch {
-                        addAssistantViewModel.createAssistant()
+                    assistantViewModel.viewModelScope.launch {
+                        assistantViewModel.createAssistant()
                         delay(500)
-                        addAssistantViewModel.setIsSaved(true)
+                        assistantViewModel.setIsSaved(true)
                         delay(1000)
                         navController.popBackStack()
                     }
@@ -277,8 +288,8 @@ fun Color.toHexCodeWithAlpha(): String {
 
 @Preview
 @Composable
-private fun AddAssistantScreenPreview() {
+private fun AssistantScreenPreview() {
     ARATheme {
-        AddAssistantScreen(NavController(LocalContext.current))
+        AssistantScreen(NavController(LocalContext.current))
     }
 }

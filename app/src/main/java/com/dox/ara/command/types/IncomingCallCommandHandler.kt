@@ -30,7 +30,7 @@ class IncomingCallCommandHandler @AssistedInject constructor(
     }
 
     override fun parseArguments() {
-        val callValue = args[0].uppercase().replace("'", "")
+        val callValue = args[0].uppercase().replace("'", "").replace("\"", "")
 
         try {
             this.callValue = CallValue.valueOf(callValue)
@@ -78,7 +78,7 @@ class IncomingCallCommandHandler @AssistedInject constructor(
         )
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
         return when(callValue) {
             CallValue.ACCEPT -> handleAccept()
             CallValue.REJECT -> handleReject()

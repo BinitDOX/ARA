@@ -1,4 +1,4 @@
-package com.truecrm.rat.database
+package com.dox.ara.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -13,7 +13,7 @@ import com.dox.ara.model.Message
 
 @Database(entities = [Assistant::class, Chat::class,
     Message::class, Alarm::class],
-    version = 1,
+    version = 2, exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun assistantDao(): AssistantDao

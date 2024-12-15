@@ -8,6 +8,7 @@ import android.os.Build
 import com.dox.ara.dao.AlarmDao
 import com.dox.ara.listener.AlarmListener
 import com.dox.ara.model.Alarm
+import com.dox.ara.model.Assistant
 import com.dox.ara.utility.Constants.ALARM_ID_EXTRA
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -68,4 +69,9 @@ class AlarmRepository @Inject constructor(
         Timber.d("[${::cancelAlarm.name}] Alarm cancelled")
     }
 
+    suspend fun getAssistant(alarm: Alarm): Assistant? {
+        val a = alarmDao.getAssistantByAlarmId(alarm.id)
+        Timber.d("ASS:" + a?.name)
+        return a;
+    }
 }

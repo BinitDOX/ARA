@@ -1,7 +1,6 @@
 package com.dox.ara.logging
 
 import android.content.Context
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -9,22 +8,27 @@ import android.widget.Toast
 import com.dox.ara.utility.Constants.APP_ID
 import com.dox.ara.utility.Constants.APP_NAME
 import timber.log.Timber
+import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import java.io.IOException
 import java.io.PrintWriter
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class FileLoggingTree(private val context: Context,
-                      private val writeToPrivateDir: Boolean = true,
-) : Timber.DebugTree(), Thread.UncaughtExceptionHandler {
+class FileLoggingTree(private val context: Context) : Timber.DebugTree(), Thread.UncaughtExceptionHandler {
     private var isLoggingException = false
+    private var writer: BufferedWriter? = null
+    private val writerLock = Any()
+    private var currentLogFileDate: String = getCurrentDate()
 
     init {
         // Set this class as the default uncaught exception handler
         defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
+
+        writer = openLogFile()
     }
 
     override fun uncaughtException(t: Thread, e: Throwable) {
@@ -47,34 +51,17 @@ class FileLoggingTree(private val context: Context,
     }
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        if (!isExternalStorageWritable()) {
-            return
+        val newDate = getCurrentDate()
+        if (currentLogFileDate != newDate) {
+            currentLogFileDate = newDate
+            rotateLogFile()
         }
-
-        val logFile = getLogFile()
 
         try {
-            FileWriter(logFile, true).use { writer ->
-                writer.append("[${getCurrentDateTime()}] [${logLevelToString(priority)}] [$tag]: $message\n")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun logException(throwable: Throwable) {
-        if (!isExternalStorageWritable()) {
-            return
-        }
-
-        val logFile = getLogFile()
-
-        try {
-            FileWriter(logFile, true).use { fileWriter ->
-                PrintWriter(fileWriter).use { printWriter ->
-                    printWriter.append("${getCurrentDateTime()} [${logLevelToString(Log.ERROR)}] [Global Exception Handler]: " +
-                            "Uncaught Exception: ${throwable.message}\n")
-                    throwable.printStackTrace(printWriter)
+            synchronized(writerLock) {
+                writer?.apply {
+                    append("[${getCurrentDateTime()}] [${logLevelToString(priority)}] [$tag]: $message\n")
+                    flush()  // Flush after each log to ensure persistence
                 }
             }
         } catch (e: Exception) {
@@ -82,30 +69,52 @@ class FileLoggingTree(private val context: Context,
         }
     }
 
+    private fun logException(throwable: Throwable) {
+        try {
+            synchronized(writerLock) {
+                writer?.apply {
+                    append("[${getCurrentDateTime()}] [ERROR] [Global Exception Handler] Uncaught Exception: ${throwable.message}\n")
+                    throwable.printStackTrace(PrintWriter(this))
+                    flush()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun openLogFile(): BufferedWriter {
+        val logFile = getLogFile()
+        return BufferedWriter(FileWriter(logFile, true))
+    }
+
+    private fun rotateLogFile() {
+        synchronized(writerLock) {
+            try {
+                closeLogWriter()
+                writer = openLogFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun getLogFile(): File {
-        val logDir = if (writeToPrivateDir) {
-            File(context.filesDir, "${APP_ID}-logs")
-        } else {
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        }
+        val logDir = File(context.filesDir, "${APP_ID}-logs")
+        if (!logDir.exists()) logDir.mkdirs()
 
-        if (!logDir.exists()) {
-            logDir.mkdirs()
-        }
+        val logFile = File(logDir, "log_$currentLogFileDate.txt")
 
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
-        val logFile = File(logDir, "log_$currentDate.txt")
         return logFile
+    }
+
+    private fun getCurrentDate(): String {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().time)
     }
 
     private fun getCurrentDateTime(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(Calendar.getInstance().time)
-    }
-
-    private fun isExternalStorageWritable(): Boolean {
-        val state = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED == state
     }
 
     private fun logLevelToString(priority: Int): String {
@@ -116,6 +125,20 @@ class FileLoggingTree(private val context: Context,
             Log.ERROR -> "ERROR"
             Log.ASSERT -> "ASSERT"
             else -> "UNKNOWN"
+        }
+    }
+
+    fun closeLogWriter() {
+        synchronized(writerLock) {
+            try {
+                writer?.apply {
+                    append("[${getCurrentDateTime()}] [DEBUG] [${::FileLoggingTree.name}] [${::closeLogWriter.name}] Closed")
+                    flush()
+                    close()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
     }
 

@@ -328,6 +328,6 @@ private fun AddProfilePicture(
 @Composable
 private fun AddAssistantScreenPreview() {
     ARATheme {
-        AddAssistantScreen(NavController(LocalContext.current))
+        AssistantScreen(NavController(LocalContext.current))
     }
 }

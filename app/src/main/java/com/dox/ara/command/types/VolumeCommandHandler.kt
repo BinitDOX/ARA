@@ -24,7 +24,7 @@ class VolumeCommandHandler @AssistedInject constructor(
     }
 
     override fun parseArguments() {
-        val level = args[0].replace("'", "")
+        val level = args[0].replace("'", "").replace("\"", "")
 
         try {
             this.level = level.toInt()
@@ -36,7 +36,7 @@ class VolumeCommandHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
         return try {
             val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
             val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)

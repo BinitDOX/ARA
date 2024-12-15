@@ -110,7 +110,7 @@ class PayUpiCommandHandler @AssistedInject constructor(
         )
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
        return when(applicationName){
            PaymentApplication.PAYTM -> handlePaytm()
            PaymentApplication.PHONE_PAY -> handlePhonePay()

@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.location.LocationManager
 import android.media.AudioManager
 import android.net.Uri
 import android.net.wifi.WifiManager
@@ -55,6 +56,11 @@ class AppTools {
                 ) == PackageManager.PERMISSION_GRANTED
             ) { return telephonyManager.isDataEnabled }
             return false
+        }
+
+        fun isGpsEnabled(context: Context): Boolean {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         }
 
         fun getDeviceName(): String {

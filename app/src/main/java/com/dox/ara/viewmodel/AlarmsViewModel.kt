@@ -3,6 +3,7 @@ package com.dox.ara.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dox.ara.model.Alarm
+import com.dox.ara.model.Assistant
 import com.dox.ara.repository.AlarmRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +17,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlarmsViewModel @Inject constructor(
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
 ): ViewModel() {
 
     private val _alarmItems = MutableStateFlow(emptyList<Alarm>())
     val alarmItems = _alarmItems.asStateFlow()
+
+    private val _assistant = MutableStateFlow<Assistant?>(null)
+    val assistant = _assistant.asStateFlow()
 
     init {
         getAlarms()
@@ -56,6 +60,12 @@ class AlarmsViewModel @Inject constructor(
                 alarmRepository.cancelAlarm(alarm)
             }
             alarmRepository.update(alarm)
+        }
+    }
+
+    fun updateAssistant(alarm: Alarm) {
+        viewModelScope.launch {
+            _assistant.update { alarmRepository.getAssistant(alarm) }
         }
     }
 

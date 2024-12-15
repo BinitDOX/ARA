@@ -1,6 +1,7 @@
 package com.dox.ara.ui.component.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ import com.dox.ara.ui.component.ActionMenu
 import com.dox.ara.ui.component.ProfilePicture
 import com.dox.ara.ui.data.ActionItem
 import com.dox.ara.ui.data.OverflowMode
+import com.dox.ara.ui.data.RouteItem
 import com.dox.ara.ui.theme.ARATheme
 import com.dox.ara.viewmodel.ChatViewModel
 import kotlinx.coroutines.launch
@@ -57,7 +59,11 @@ fun TopBarChat(
     val openDeleteDialog = remember { mutableStateOf(false) }
 
     val actionItems = listOf(
-        ActionItem(R.string.btn_view_assistant, Icons.Outlined.Person, OverflowMode.ALWAYS_OVERFLOW) {},
+        ActionItem(R.string.btn_view_assistant, Icons.Outlined.Person, OverflowMode.ALWAYS_OVERFLOW) {
+            if(assistant != null) {
+                navController.navigate("${RouteItem.Assistant.route}/${assistant!!.id}")
+            }
+        },
         ActionItem(R.string.btn_delete_chat, Icons.Outlined.Delete, OverflowMode.ALWAYS_OVERFLOW) {
             chatViewModel.viewModelScope.launch {
                 openDeleteDialog.value = true
@@ -150,26 +156,31 @@ fun TopBarChat(
             )
         } else {
 
-            ProfilePicture(size = 42.dp, imageUri = assistant!!.imageUri)
+            Row(modifier = Modifier
+                .clickable { onProfileClicked() }
+            ) {
+                ProfilePicture(size = 42.dp, imageUri = assistant!!.imageUri)
 
-            Spacer(modifier = Modifier.width(10.dp))
 
-            Column {
-                Text(
-                    text = assistant!!.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Start,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-                if (assistant!!.about.isNotBlank()) {
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column {
                     Text(
-                        text = assistant!!.about,
-                        style = MaterialTheme.typography.titleSmall,
+                        text = assistant!!.name,
+                        style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Start,
-                        color = MaterialTheme.colorScheme.onTertiary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        color = MaterialTheme.colorScheme.onTertiary
                     )
+                    if (assistant!!.about.isNotBlank()) {
+                        Text(
+                            text = assistant!!.about,
+                            style = MaterialTheme.typography.titleSmall,
+                            textAlign = TextAlign.Start,
+                            color = MaterialTheme.colorScheme.onTertiary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 

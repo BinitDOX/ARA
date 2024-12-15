@@ -85,6 +85,10 @@ class NotificationChannelManager @Inject constructor(
         manager.createNotificationChannel(speechChannel)
     }
 
+    fun cancelNotification(notificationId: Int) {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.cancel(notificationId)
+    }
 
     @SuppressLint("MissingPermission")
     fun showAssistantResponseNotification(chatId: Long, title: String, text: String) {

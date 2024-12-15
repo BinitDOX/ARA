@@ -37,8 +37,9 @@ class AlarmListener : BroadcastReceiver() {
                     val content = "An Alarm has been triggered, inform the user about it.\n" +
                         "Alarm description: ${alarm.description}\n" +
                         "Alarm time: ${sdf.format(Date(alarm.time))}\n" +
+                        "Alarm volume: ${alarm.volume}}\n" +
                         "Append the following command at the end of your next message" +
-                        " with any appropriate alarm volume level between 1-100:\n" +
+                        " with any appropriate or the provided alarm volume level between 1-100:\n" +
                         "[volume(<1-100>)]"
 
                     val eventResponse = EventRepository.EventResponse(
@@ -48,7 +49,7 @@ class AlarmListener : BroadcastReceiver() {
                     )
                     val updatedAlarm = alarm.copy(isActive = false)
                     alarmRepository.update(updatedAlarm)
-                    eventRepository.handleEvent(eventResponse)
+                    eventRepository.handleEvent(eventResponse, chatId = alarm.chatId.let { id->id.toString() })
                 } else {
                     Timber.e("[${::onReceive.name}] Alarm not found")
                 }

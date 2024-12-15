@@ -8,6 +8,7 @@
 
     <!--    Screen Titles-->
     <string name="screen_add_assistant">Create Assistant</string>
+    <string name="screen_update_assistant">Update Assistant</string>
     <string name="screen_settings">Settings</string>
 
     <!--    Content Description-->
@@ -69,6 +70,8 @@
     <string name="btn_show_tokens">Show Tokens</string>
     <string name="music_notification_channel_name">ARA-Music</string>
     <string name="speech_notification_channel_name">ARA-Speech</string>
+    <string name="cd_btn_refresh">Refresh Button</string>
+    <string name="btn_update_assistant">UPDATE</string>
 
 
 </resources>

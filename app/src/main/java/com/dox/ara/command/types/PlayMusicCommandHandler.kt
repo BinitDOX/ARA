@@ -45,7 +45,8 @@ class PlayMusicCommandHandler @AssistedInject constructor(
 
     override fun parseArguments() {
         val applicationName = args[0].replace(" ", "_").uppercase().replace("'", "")
-        val songName = args[1].replace("'", "")
+            .replace("\"", "")
+        val songName = args[1].replace("'", "").replace("\"", "")
 
         try {
             this.applicationName = MusicApplication.valueOf(applicationName)
@@ -128,7 +129,7 @@ class PlayMusicCommandHandler @AssistedInject constructor(
         )
     }
 
-    override suspend fun execute(): CommandResponse {
+    override suspend fun execute(chatId: Long): CommandResponse {
        return when(applicationName){
            MusicApplication.YOUTUBE -> handleYoutube()
            MusicApplication.LOCAL -> handleLocal()

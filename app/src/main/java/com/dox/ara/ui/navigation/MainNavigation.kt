@@ -14,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dox.ara.ui.data.RouteItem
 import com.dox.ara.ui.data.navItems
-import com.dox.ara.ui.screen.AddAssistantScreen
+import com.dox.ara.ui.screen.AssistantScreen
 import com.dox.ara.ui.screen.ChatScreen
 import com.dox.ara.ui.screen.HomeScreen
 import com.dox.ara.ui.screen.SettingsScreen
@@ -49,8 +49,9 @@ fun MainNavigation(
             composable(RouteItem.Home.route) {
                 HomeScreen(navController, pageController)
             }
-            composable(RouteItem.AddAssistant.route) {
-                AddAssistantScreen(navController)
+            composable("${RouteItem.Assistant.route}/{${RouteItem.Assistant.arguments.first().name}}",
+                arguments = RouteItem.Assistant.arguments) {
+                AssistantScreen(navController)
             }
             composable(
                 "${RouteItem.Chat.route}/{${RouteItem.Chat.arguments.first().name}}",
